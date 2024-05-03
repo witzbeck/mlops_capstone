@@ -1,0 +1,52 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"name": "root"
+		},
+		{
+			"path": "./app",
+			"name": "app"
+		},
+		{
+			"path": "./frontend",
+			"name": "frontend"
+		}
+	],
+	"settings": {
+		"editor.defaultFormatter": "charliermarsh.ruff",
+		"git.openRepositoryInParentFolders": "always",
+		"git.enableSmartCommit": true,
+		"git.confirmSync": false,
+		"[python]": {
+			"editor.formatOnType": true,
+			"editor.defaultFormatter": "charliermarsh.ruff",
+			"editor.codeActionsOnSave": {
+				"source.fixAll": "explicit",
+				"source.organizeImports": "explicit"
+			}
+		},
+		"python.poetryPath": "poetry",
+		"python.analysis.enablePytestSupport": true,
+		"python.languageServer": "Default",
+		"python.analysis.autoFormatStrings": true,
+		"python.analysis.autoSearchPaths": true,
+		"python.analysis.autoImportCompletions": true,
+		"python.testing.pytestEnabled": true,
+		"python.testing.pytestPath": "poetry run pytest",
+		"python.testing.unittestEnabled": false,
+		"ruff.format.args": [
+			"--config=ruff.toml"
+		],
+		
+		"ruff.lint.args": [
+			"--config=ruff.toml"
+		],
+		"ruff.codeAction.disableRuleComment": {
+			"enable": false
+		},
+		"[jsonc]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		}
+	}
+}

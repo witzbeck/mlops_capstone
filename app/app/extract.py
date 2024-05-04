@@ -1,25 +1,30 @@
-import multiprocessing
-import pytesseract
+from multiprocessing import Pool
+from pathlib import Path
+
+from pytesseract import image_to_string
 from pdf2image import convert_from_path
-import pdfplumber
+from pdfplumber import open as open_pdf
+
 
 def extract_pdf_data(pdf_path):
     try:
-        with pdfplumber.open(pdf_path) as pdf:
+        with open_pdf(pdf_path) as pdf:
             # Use list comprehension for efficient text accumulation
             text = [page.extract_text() for page in pdf.pages if page.extract_text()]
-            return ''.join(text)  # Join list into a single string
+            return "".join(text)  # Join list into a single string
     except Exception as e:
-        raise RuntimeError(f"Error in PDF extraction: {e}")
+        raise RuntimeError("Error in PDF extraction") from e
+
 
 def ocr_pdf_data(pdf_path):
     try:
         images = convert_from_path(pdf_path)
         # Utilize comprehension and join directly to avoid intermediate list storage
-        text = ' '.join(pytesseract.image_to_string(image) for image in images)
+        text = " ".join(image_to_string(image) for image in images)
         return text
     except Exception as e:
         raise RuntimeError("Error in OCR process") from e
+
 
 def compare_results(result1, result2):
     # Enhanced logic to compare based on non-empty content
@@ -27,14 +32,19 @@ def compare_results(result1, result2):
         return max(result1, result2, key=len)
     return result1 or result2
 
-def process_pdf(pdf_path):
+
+def process_pdf(pdf_path: Path) -> dict[str, str]:
     # Properly utilize multiprocessing to handle different tasks
-    with multiprocessing.Pool(processes=2) as pool:
+    with Pool(processes=2) as pool:
         # Setup tasks and retrieve results
-        tasks = [pool.apply_async(extract_pdf_data, (pdf_path,)), pool.apply_async(ocr_pdf_data, (pdf_path,))]
+        tasks = [
+            pool.apply_async(extract_pdf_data, (pdf_path,)),
+            pool.apply_async(ocr_pdf_data, (pdf_path,)),
+        ]
         results = [task.get() for task in tasks]  # Collect results
         best_result = compare_results(*results)
         return best_result
+
 
 # Usage
 pdf_path = "path_to_your_pdf.pdf"

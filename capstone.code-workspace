@@ -39,7 +39,7 @@
 			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml"
 		],
 		"ruff.lint.args": [
-			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml "
+			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml"
 		],
 		"ruff.codeAction.disableRuleComment": {
 			"enable": false

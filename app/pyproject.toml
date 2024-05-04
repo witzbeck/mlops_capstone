@@ -7,12 +7,13 @@ authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 uvicorn = "*"
+gunicorn = "^22.0"
 fastapi = "*"
-pydantic = "*"
 daal4py = "*"
 xgboost = "*"
 scikit-learn-intelex = "*"
 mlflow = "*"
+pydantic = "^2.4"
 
 [build-system]
 requires = ["poetry-core"]

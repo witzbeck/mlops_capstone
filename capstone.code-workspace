@@ -36,11 +36,10 @@
 		"python.testing.pytestPath": "poetry run pytest",
 		"python.testing.unittestEnabled": false,
 		"ruff.format.args": [
-			"--config=ruff.toml"
+			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml"
 		],
-		
 		"ruff.lint.args": [
-			"--config=ruff.toml"
+			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml "
 		],
 		"ruff.codeAction.disableRuleComment": {
 			"enable": false

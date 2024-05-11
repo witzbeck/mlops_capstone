@@ -50,9 +50,3 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           docker-compose up --build --detach --remove-orphans
-          echo "Waiting for all services to be healthy..."
-          until [ $(docker-compose ps --services --filter "status=healthy" | wc -l) -eq 3 ]; do
-            echo "Waiting for services to become healthy..."
-            sleep 2
-          done
-          echo "All services are up and healthy."

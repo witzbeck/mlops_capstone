@@ -17,6 +17,9 @@ xgboost = "*"
 scikit-learn-intelex = "*"
 mlflow = "*"
 pydantic = "*"
+pytesseract = "*"
+pdf2image = "*"
+pdfplumber = "*"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,4 +1,5 @@
 """Main FastAPI Application"""
+
 from logging import DEBUG, basicConfig, getLogger
 from os import getenv
 from warnings import filterwarnings

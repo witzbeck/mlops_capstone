@@ -1,24 +1,34 @@
 {
 	"folders": [
 		{
+			"path": "./tests",
+			"name": "root_tests",
+			"defaultInterpreterPath": "pipx run pytest"
+		},
+		{
+			"path": "./app_tests",
+			"name": "app_tests",
+			"defaultInterpreterPath": "./app/.venv/bin/python"
+		},
+		{
+			"path": "./frontend_tests",
+			"name": "frontend_tests",
+			"defaultInterpreterPath": "./frontend/.venv/bin/python"
+		},
+		{
 			"path": ".",
 			"name": "root",
 			"defaultInterpreterPath": "./.venv/bin/python"
 		},
 		{
-			"path": "./tests",
-			"name": "tests",
-			"defaultInterpreterPath": "pipx run pytest"
-		},
-		{
 			"path": "./app",
 			"name": "app",
-			"defaultInterpreterPath": "./.venv/bin/python"
+			"defaultInterpreterPath": "./app/.venv/bin/python"
 		},
 		{
 			"path": "./frontend",
 			"name": "frontend",
-			"defaultInterpreterPath": "./.venv/bin/python"
+			"defaultInterpreterPath": "./frontend/.venv/bin/python"
 		}
 	],
 	"settings": {

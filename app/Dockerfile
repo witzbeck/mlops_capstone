@@ -11,4 +11,3 @@ WORKDIR /app
 
 # install dependancies
 RUN pip3 install --user --no-cache-dir -e .
-

@@ -11,9 +11,7 @@ env_lines = [
     for line in dotenv_file.read_text().splitlines()
     if line.strip() and not line.strip().startswith("#")
 ]
-pairs = {
-    k: v for k, v in (line.split("=", 1) for line in env_lines)
-}
+pairs = {k: v for k, v in (line.split("=", 1) for line in env_lines)}
 environ.update(pairs)
 
 store = here / "store"

@@ -13,6 +13,12 @@ python = "^3.10"
 frontend = { path = "frontend", develop = true }
 app = { path = "app", develop = true }
 
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-xdist = "*"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

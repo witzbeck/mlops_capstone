@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      # Run the linter.
+      - id: ruff
+        types_or: [python, pyi, jupyter]
+        args: [--fix, --config, pyproject.toml]
+      # Run the formatter.
+      - id: ruff-format
+        types_or: [python, pyi, jupyter]
+        args: [--config, pyproject.toml]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: poetry run pytest --color=yes --cov=app --cov=frontend --cov-report=term-missing --cov-report=xml --cov-report=html -n auto
+        language: system
+        types: [python]
+        pass_filenames: false # pytest discovers tests by itself
+
+# Optional: Configure additional settings for hooks
+default_stages: [commit]

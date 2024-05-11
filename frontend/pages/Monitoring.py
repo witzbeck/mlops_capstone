@@ -1,4 +1,5 @@
 """This page is the main interface for monitoring the performance of the model."""
+
 from PIL import Image
 from streamlit import caption, divider, image, markdown, title
 

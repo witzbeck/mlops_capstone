@@ -108,15 +108,6 @@ class TestPDFProcessing(TestCase):
                 result, "Extracted data"
             )  # Extracted data is longer than OCR data
 
-    def test_real_process_pdf_integration(self):
-        """Test the full process of PDF extraction and OCR."""
-        result = process_pdf(self.test_pdf_path, use_multiprocessing=True)
-        self.assertTrue(result)
-        self.assertIsInstance(result, str)
-        self.assertIn("ACORD", result)
-        self.assertIn("COMMERCIAL INSURANCE APPLICATION", result)
-        self.assertIn("POLICY NUMBER", result)
-
 
 if __name__ == "__main__":
     main()

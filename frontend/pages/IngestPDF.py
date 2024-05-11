@@ -86,9 +86,9 @@ with help_tab:
         - **Upload PDF/Image**: You can upload PDF files or images directly from your device.
         - **Image URL**: Provide a direct URL to an image for data extraction.
         - **Paste Image Data (Base64)**: Paste Base64 encoded image data directly into the text area.
-        
+
         This application allows you to extract structured data from documents in various formats. After choosing your preferred input method and submitting your document, extracted data will be displayed below.
-        
+
         **Note:** Ensure the Base64 string or URL is correct and accessible.
         """
     )

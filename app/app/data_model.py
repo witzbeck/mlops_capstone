@@ -54,8 +54,10 @@ class ImageInput(BaseModel):
             raise ValueError("Please provide only one type of image input")
         return v
 
+
 class PDFInputModel(BaseModel):
     pdf_file: bytes  # Uploaded PDF file data
+
 
 # Assuming we will extract and return structured data as a dictionary
 class ExtractedDataModel(BaseModel):
@@ -63,6 +65,7 @@ class ExtractedDataModel(BaseModel):
     content: Optional[str] = None
     author: Optional[str] = None
     number_of_pages: Optional[int] = None
+
 
 class TrainPayload(BaseModel):
     file: str

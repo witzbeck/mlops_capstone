@@ -10,10 +10,6 @@ on:
 jobs:
   build:
     runs-on: [self-hosted]
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
     env:
       LOG_LEVEL: ${{ github.LOG_LEVEL }}
       HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}

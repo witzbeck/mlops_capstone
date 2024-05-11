@@ -2,29 +2,37 @@
 	"folders": [
 		{
 			"path": ".",
-			"name": "root"
+			"name": "root",
+			"defaultInterpreterPath": "./.venv/bin/python"
+		},
+		{
+			"path": "./tests",
+			"name": "tests",
+			"defaultInterpreterPath": "pipx run pytest"
 		},
 		{
 			"path": "./app",
-			"name": "app"
+			"name": "app",
+			"defaultInterpreterPath": "./.venv/bin/python"
 		},
 		{
 			"path": "./frontend",
-			"name": "frontend"
+			"name": "frontend",
+			"defaultInterpreterPath": "./.venv/bin/python"
 		}
 	],
 	"settings": {
 		"editor.defaultFormatter": "charliermarsh.ruff",
+		"editor.formatOnSave": true,
 		"git.openRepositoryInParentFolders": "always",
 		"git.enableSmartCommit": true,
 		"git.confirmSync": false,
 		"[python]": {
-			"editor.formatOnType": true,
 			"editor.defaultFormatter": "charliermarsh.ruff",
 			"editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			}
+				"source.fixAll": "always",
+				"source.organizeImports": "always"
+			},
 		},
 		"python.poetryPath": "poetry",
 		"python.analysis.enablePytestSupport": true,
@@ -33,19 +41,39 @@
 		"python.analysis.autoSearchPaths": true,
 		"python.analysis.autoImportCompletions": true,
 		"python.testing.pytestEnabled": true,
-		"python.testing.pytestPath": "poetry run pytest",
-		"python.testing.unittestEnabled": false,
-		"ruff.format.args": [
-			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml"
+		"python.testing.pytestPath": "pipx run pytest",
+		"python.testing.pytestArgs": [
+			"--cov=app",
+			"--cov=frontend",
+			"--cov-report=xml:coverage.xml",
+			"--cov-report=term",
+			"-n auto",
 		],
-		"ruff.lint.args": [
-			"--config=/Users/Fr333y3d3a/repos/mlops_capstone/ruff.toml"
+		"testing.showCoverageInExplorer": true,
+		"python.testing.autoTestDiscoverOnSaveEnabled": true,
+		"coverage-gutters.coverageFileNames": [
+			"lcov.info",
+			"cov.xml",
+			"coverage.xml",
+			"jacoco.xml",
+			"coverage.cobertura.xml"
 		],
+		"coverage-gutters.showLineCoverage": true,
+		"coverage-gutters.showRulerCoverage": true,
+		"coverage-gutters.customizable.status-bar-toggler-watchCoverageAndVisibleEditors-enabled": true,
+		"coverage-gutters.showGutterCoverage": true,
 		"ruff.codeAction.disableRuleComment": {
 			"enable": false
 		},
+		"ruff.ignoreStandardLibrary": true,
 		"[jsonc]": {
 			"editor.defaultFormatter": "vscode.json-language-features"
-		}
+		},
+		"[toml]": {
+			"editor.defaultFormatter": "tamasfe.even-better-toml",
+		},
+		"[yaml]": {
+			"editor.defaultFormatter": "redhat.vscode-yaml"
+		},
 	}
 }

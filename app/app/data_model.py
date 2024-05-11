@@ -1,4 +1,4 @@
-import base64
+from base64 import b64decode
 from typing import Optional
 
 from pydantic import BaseModel, HttpUrl, field_validator
@@ -14,7 +14,7 @@ class ImageInput(BaseModel):
         if v is not None:
             # Try to decode to verify if it is correct base64
             try:
-                base64.b64decode(v)
+                b64decode(v)
             except ValueError as e:
                 raise ValueError(f"Invalid base64 string {e}") from e
         # Ensure only one input is provided

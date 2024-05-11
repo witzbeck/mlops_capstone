@@ -24,6 +24,10 @@ jobs:
       MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
       MLFLOW_PORT: ${{ github.MLFLOW_PORT }}
     steps:
+      - name: Display User
+        run: |
+          echo "Running as user: $(whoami)"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 

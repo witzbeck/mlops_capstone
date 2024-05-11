@@ -27,16 +27,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create .env file from secrets
+      - name: Create .env file from envs
         run: |
+          echo "Running as user: $(whoami)"
           echo "LOG_LEVEL=${LOG_LEVEL}" >> .env
           echo "HF_MODEL_NAME=${HF_MODEL_NAME}" >> .env
-          echo "HF_TOKEN=${HF_TOKEN}" >> .env
+          "HF_TOKEN=${HF_TOKEN}" >> .env
           echo "APP_URL_BASE=${APP_URL_BASE}" >> .env
           echo "WORKERS_PER_CORE=${WORKERS_PER_CORE}" >> .env
           echo "MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}" >> .env
-          echo "MLFLOW_STORE_URI=${MLFLOW_STORE_URI}" >> .env
-          echo "MLFLOW_PORT=${MLFLOW_PORT}" >> .env
+          "MLFLOW_STORE_URI=${MLFLOW_STORE_URI}" >> .env
+          "MLFLOW_PORT=${MLFLOW_PORT}" >> .env
 
       - name: Bring down Docker Compose services
         if: github.event_name != 'pull_request'

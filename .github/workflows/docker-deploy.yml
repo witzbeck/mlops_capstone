@@ -15,8 +15,8 @@ jobs:
       packages: write
       id-token: write
     env:
-      LOG_LEVEL: ${{ secrets.DEBUG }}
-      HF_MODEL_NAME: ${{ secrets.HF_MODEL_NAME }}
+      LOG_LEVEL: ${{ github.LOG_LEVEL }}
+      HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       APP_URL_BASE: ${{ github.APP_URL_BASE }}
       WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}

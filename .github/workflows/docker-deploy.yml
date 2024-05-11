@@ -42,7 +42,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: docker-compose down || true # Ignore errors if services are not running
 
-      - name: Bring up Docker Compose services
+      - name: Build images
         run: docker-compose build
 
       - name: Bring up Docker Compose services

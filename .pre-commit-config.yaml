@@ -20,6 +20,12 @@ repos:
 
   - repo: local
     hooks:
+      - id: rm-old-covertura
+        name: Remove old covertura reports
+        entry: rm -rf .coverage .coverage.xml htmlcov
+        language: system
+        types: [python]
+        pass_filenames: false
       - id: pytest
         name: pytest
         entry: poetry run pytest --color=yes --cov=app --cov=frontend --cov-report=term-missing --cov-report=xml --cov-report=html -n auto

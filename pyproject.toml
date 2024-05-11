@@ -33,6 +33,16 @@ name = "intel-pytorch-extension"
 url = "https://pytorch-extension.intel.com/release-whl/stable/cpu/us/"
 priority = "explicit"
 
+[tool.pytest.ini_options]
+testpaths = ["tests", "app/tests", "frontend/tests"]
+addopts = "--color=yes --cov=app --cov=frontend --cov-report=term-missing --cov-report=xml --cov-report=html -n auto"
+filterwarnings = ["ignore::UserWarning"]
+required_plugins = [
+    "pytest-cov>=1.34.0",
+    "pytest-mock>=3.12.0",
+    "pytest-xdist>=2.4.0",
+]
+
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

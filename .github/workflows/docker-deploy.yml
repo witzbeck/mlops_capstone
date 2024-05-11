@@ -1,0 +1,50 @@
+name: Docker Deploy
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: [self-hosted]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    env:
+      LOG_LEVEL: ${{ github.LOG_LEVEL }}
+      HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      APP_URL_BASE: ${{ github.APP_URL_BASE }}
+      WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}
+      MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
+      MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
+      MLFLOW_PORT: ${{ github.MLFLOW_PORT }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file from secrets
+        run: |
+          echo "LOG_LEVEL=${LOG_LEVEL}" >> .env
+          echo "HF_MODEL_NAME=${HF_MODEL_NAME}" >> .env
+          echo "HF_TOKEN=${HF_TOKEN}" >> .env
+          echo "APP_URL_BASE=${APP_URL_BASE}" >> .env
+          echo "WORKERS_PER_CORE=${WORKERS_PER_CORE}" >> .env
+          echo "MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}" >> .env
+          echo "MLFLOW_STORE_URI=${MLFLOW_STORE_URI}" >> .env
+          echo "MLFLOW_PORT=${MLFLOW_PORT}" >> .env
+
+      - name: Bring down Docker Compose services
+        if: github.event_name != 'pull_request'
+        run: docker-compose down || true # Ignore errors if services are not running
+
+      - name: Build images
+        run: docker-compose build
+
+      - name: Bring up Docker Compose services
+        if: github.event_name != 'pull_request'
+        run: docker-compose up --remove-orphans

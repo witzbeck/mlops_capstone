@@ -9,6 +9,6 @@ PAGES_PATH = PROJECT_PATH / "pages"
 FRONTEND_PATH = PROJECT_PATH / "frontend"
 STORE_PATH = PROJECT_PATH / "store"
 OUTPUTS_PATH = STORE_PATH / "outputs"
-TRAINING_DATA_PATH = STORE_PATH / "datasets/robot_maintenance/train.pkl"tracking_uri = getenv("MLFLOW_TRACKING_URI")
+TRAINING_DATA_PATH = STORE_PATH / "datasets/robot_maintenance/train.pkl"
 MLFLOW_TRACKING_URI = getenv("MLFLOW_TRACKING_URI")
 

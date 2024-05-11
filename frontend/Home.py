@@ -10,7 +10,7 @@ from streamlit import (
     title,
 )
 
-from frontend.constants import ASSETS_PATH
+from constants import ASSETS_PATH
 
 
 title("Form Recognition & Document Extraction")

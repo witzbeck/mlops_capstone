@@ -3,7 +3,6 @@ Module to train and prediction using XGBoost Classifier
 """
 # !/usr/bin/env python
 # coding: utf-8
-# pylint: disable=import-error
 
 from logging import DEBUG, basicConfig, getLogger
 from os import getenv

@@ -5,16 +5,21 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: requirements-txt-fixer
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.4
     hooks:
-      # Run the linter.
-      - id: ruff
+      - id: ruff # Run the linter.
         types_or: [python, pyi, jupyter]
         args: [--fix, --config, pyproject.toml]
-      # Run the formatter.
-      - id: ruff-format
+      - id: ruff-format # Run the formatter.
         types_or: [python, pyi, jupyter]
         args: [--config, pyproject.toml]
 

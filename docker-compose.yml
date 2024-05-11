@@ -10,6 +10,11 @@ services:
       - .env
     networks:
       - mlflow_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   app:
     build:
       context: app
@@ -27,6 +32,11 @@ services:
       - mlflow
     networks:
       - mlflow_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   frontend:
     build:
       context: frontend
@@ -43,6 +53,11 @@ services:
       - mlflow
     networks:
       - mlflow_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   mlflow_network:

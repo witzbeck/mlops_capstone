@@ -11,6 +11,3 @@ WORKDIR /app
 
 # install dependancies
 RUN pip3 install --user --no-cache-dir -e .
-
-# generate training data
-RUN python -m app --generate -s 50000

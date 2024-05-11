@@ -1,4 +1,8 @@
 
+# shouldn't check local configs into repo
+poetry.toml
+.pythonversion
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

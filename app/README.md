@@ -1,5 +1,5 @@
 ## Robotics Predictive Maintenance Lifecycle Solution Component
-The demand predictive asset maintenance component uses an XGBoost classifier to flag assets that need maintenance.  It leverages the Intel® Extension for Scikit-Learn, XGBoost, and daal4py on Intel® 4th Generation Xeon® Scalable processors. 
+The demand predictive asset maintenance component uses an XGBoost classifier to flag assets that need maintenance.  It leverages the Intel® Extension for Scikit-Learn, XGBoost, and daal4py on Intel® 4th Generation Xeon® Scalable processors.
 
 ![image](https://github.com/intel-innersource/frameworks.ai.ai-hackathon/assets/57263404/f80ad7af-4248-45a6-9b9c-69f47b9a7db6)
 

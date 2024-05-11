@@ -1,5 +1,5 @@
-""" This module contains the inference function that is used to make predictions on new data samples. 
-"""
+"""This module contains the inference function that is used to make predictions on new data samples."""
+
 from pathlib import Path
 from time import time
 
@@ -133,6 +133,5 @@ def inference(
             status = "Equipment Requires Scheduled Maintenance - Plan Accordingly"
 
     # logic for monitoring log file creation
-
 
     return status

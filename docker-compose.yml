@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  mlflow:
-    image: ghcr.io/mlflow/mlflow
-    command: mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0
-    ports:
-      - "5000:5000"
-    env_file:
-      - .env
-    networks:
-      - mlflow_network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
   app:
     build:
       context: app
@@ -37,6 +23,28 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  database:
+    image: postgres:16.2
+    environment:
+      - ENVIROMENT=$ENVIRONMENT
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    container_name: database
+    restart: always
+    volumes:
+      - ./database/postgres-$ENVIRONMENT.conf:/etc/postgresql/postgresql.conf
+      - ./database/source_data:/source_data
+      - ./database/init_scripts:/docker-entrypoint-initdb.d
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - db_network
+      - mlflow_network
+
   frontend:
     build:
       context: frontend
@@ -53,12 +61,30 @@ services:
       - mlflow
     networks:
       - mlflow_network
+      - db_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  mlflow:
+    image: ghcr.io/mlflow/mlflow
+    command: mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    networks:
+      - mlflow_network
+      - db_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/ping"]
       interval: 30s
       timeout: 10s
       retries: 5
 
 networks:
   mlflow_network:
+    driver: bridge
+  db_network:
     driver: bridge

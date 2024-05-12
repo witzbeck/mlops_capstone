@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Display User
         run: |
-          sudo chown -R $USER:$USER ~
+          chown -R $USER:$USER ~
           echo "Running as user: $(whoami)"
 
       - name: Checkout repository

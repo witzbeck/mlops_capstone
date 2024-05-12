@@ -19,6 +19,10 @@ jobs:
       MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
       MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
       MLFLOW_PORT: ${{ github.MLFLOW_PORT }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+
     steps:
       - name: Display User
         run: |
@@ -39,6 +43,9 @@ jobs:
           echo "MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}" >> .env
           echo "MLFLOW_STORE_URI=${MLFLOW_STORE_URI}" >> .env
           echo "MLFLOW_PORT=${MLFLOW_PORT}" >> .env
+          echo "POSTGRES_USER=${POSTGRES_USER}" >> .env
+          echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env
+          echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
 
       - name: Bring down Docker Compose services
         if: github.event_name != 'pull_request'

@@ -33,7 +33,7 @@ repos:
         pass_filenames: false
       - id: pytest
         name: pytest
-        entry: poetry run pytest --color=yes --cov=app --cov=frontend --cov-report=term-missing --cov-report=xml --cov-report=html -n auto
+        entry: poetry run pytest --cov=app --cov=frontend --cov-report=term-missing --cov-report=xml --cov-report=html -n auto
         language: system
         types: [python]
         pass_filenames: false # pytest discovers tests by itself

@@ -43,6 +43,11 @@ services:
     networks:
       - db_network
       - mlflow_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5432/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   frontend:
     build:
@@ -57,6 +62,7 @@ services:
       - .env
     depends_on:
       - app
+      - database
       - mlflow
     networks:
       - mlflow_network
@@ -68,21 +74,16 @@ services:
       retries: 5
   
   mlflow:
-    build:
-      context: mlflow
-      dockerfile: Dockerfile
-    command: mlflow server --backend-store-uri $MLFLOW_STORE_URI --default-artifact-root $MLFLOW_ARTIFACT_URI --host $POSTGRES_HOST --port $POSTGRES_PORT
+    image: ghcr.io/mlflow/mlflow:v2.12.2
+    command: ["mlflow", "server", "--backend-store-uri", "${MLFLOW_STORE_URI}", "--default-artifact-root", "${MLFLOW_ARTIFACT_URI}", "--host", "${MLFLOW_TRACKING_HOST}", "--port", "${MLFLOW_TRACKING_PORT}"]
     environment:
-      - MLFLOW_DB_USER=$MLFLOW_DB_USER
-      - MLFLOW_DB_PASSWORD=$MLFLOW_DB_PASSWORD
-      - MLFLOW_DB_NAME=$MLFLOW_DB_NAME
-      - MLFLOW_STORE_URI=$MLFLOW_STORE_URI
+      - MLFLOW_TRACKING_HOST=$MLFLOW_TRACKING_HOST
+      - MLFLOW_TRACKING_PORT=$MLFLOW_TRACKING_PORT
       - MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI
-      - MLFLOW_EXPERIMENT_NAME=$MLFLOW_EXPERIMENT_NAME
       - MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
-      - POSTGRES_HOST=$POSTGRES_HOST
-      - POSTGRES_PORT=$POSTGRES_PORT
-    
+      - MLFLOW_STORE_URI=$MLFLOW_STORE_URI
+    depends_on:
+      - database
     ports:
       - "5000:5000"
     networks:

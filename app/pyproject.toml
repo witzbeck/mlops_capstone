@@ -15,6 +15,7 @@ scikit-learn-intelex = "*"
 pytesseract = "*"
 pdf2image = "*"
 pdfplumber = "*"
+faker = "^25.1.0"
 
 [tool.poetry.group.serve.dependencies]
 fastapi = "*"

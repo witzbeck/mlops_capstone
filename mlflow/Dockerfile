@@ -28,3 +28,5 @@ ENV MLFLOW_STORE_URI=$MLFLOW_STORE_URI
 
 # Set the working directory
 WORKDIR /mlflow
+
+RUN pip install psycopg2-binary psycopg2 --no-cache-dir

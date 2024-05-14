@@ -10,4 +10,6 @@ COPY . /app
 WORKDIR /app
 
 # install dependancies
+RUN pip3 install --no-cache-dir pandas psycopg2-binary
+
 RUN pip3 install --user --no-cache-dir -e .

@@ -17,7 +17,7 @@ services:
     depends_on:
       - mlflow
     networks:
-      - mlflow_network
+      - one_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/ping"]
       interval: 30s
@@ -28,7 +28,7 @@ services:
     image: postgres:16.2
     environment:
       - ENVIROMENT=$ENVIRONMENT
-      # - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - POSTGRES_INITDB_ARGS=--data-checksums
@@ -41,8 +41,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - db_network
-      - mlflow_network
+      - one_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5432/ping"]
       interval: 30s
@@ -65,8 +64,7 @@ services:
       - database
       - mlflow
     networks:
-      - mlflow_network
-      - db_network
+      - one_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501"]
       interval: 30s
@@ -87,8 +85,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - mlflow_network
-      - db_network
+      - one_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/ping"]
       interval: 30s
@@ -96,7 +93,6 @@ services:
       retries: 5
 
 networks:
-  mlflow_network:
+  one_network:
     driver: bridge
-  db_network:
-    driver: bridge
+  

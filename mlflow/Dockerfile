@@ -1,5 +1,6 @@
 FROM ghcr.io/mlflow/mlflow:v2.12.2
 
+RUN pip install psycopg2-binary psycopg2 --no-cache-dir
 
 # ARG POSTGRES_HOST
 # ARG POSTGRES_PORT
@@ -28,5 +29,3 @@ ENV MLFLOW_STORE_URI=$MLFLOW_STORE_URI
 
 # Set the working directory
 WORKDIR /mlflow
-
-RUN pip install psycopg2-binary psycopg2 --no-cache-dir

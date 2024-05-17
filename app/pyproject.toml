@@ -14,8 +14,6 @@ pdf2image = "*"
 pdfplumber = "*"
 faker = "^25.2.0"
 pandas = "^2.2.2"
-
-[tool.poetry.group.serve.dependencies]
 fastapi = "*"
 gunicorn = "*"
 mlflow = "*"

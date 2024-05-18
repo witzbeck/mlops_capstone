@@ -75,6 +75,8 @@ services:
     image: ghcr.io/mlflow/mlflow:v2.12.2
     command: ["mlflow", "server", "--backend-store-uri", "${MLFLOW_STORE_URI}", "--default-artifact-root", "${MLFLOW_ARTIFACT_URI}", "--host", "${MLFLOW_TRACKING_HOST}", "--port", "${MLFLOW_TRACKING_PORT}"]
     environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - MLFLOW_TRACKING_HOST=$MLFLOW_TRACKING_HOST
       - MLFLOW_TRACKING_PORT=$MLFLOW_TRACKING_PORT
       - MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI

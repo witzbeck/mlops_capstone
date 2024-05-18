@@ -3,9 +3,7 @@ name = "app"
 version = "0.2.0"
 description = ""
 authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
-packages = [
-    { include = "app", from = "." },
-]
+packages = [{ include = "app", from = "." }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,6 +17,7 @@ gunicorn = "*"
 mlflow = "*"
 pydantic = "*"
 uvicorn = "*"
+psycopg2-binary = "*"   
 
 [build-system]
 requires = ["poetry-core"]

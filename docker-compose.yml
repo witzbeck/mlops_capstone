@@ -16,6 +16,7 @@ services:
       - .env
     depends_on:
       - mlflow
+      - database
     networks:
       - one_network
     healthcheck:

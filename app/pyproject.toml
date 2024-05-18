@@ -15,7 +15,7 @@ pandas = "^2.2.2"
 fastapi = "*"
 gunicorn = "*"
 mlflow = "*"
-pydantic = "*"
+pydantic = "^2.7.1"
 uvicorn = "*"
 psycopg2-binary = "*"   
 

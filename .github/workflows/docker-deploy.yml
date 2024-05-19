@@ -16,9 +16,11 @@ jobs:
       LOG_LEVEL: ${{ github.LOG_LEVEL }}
       HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      FASTAPI_PORT: ${{ github.FASTAPI_PORT }}
       APP_URL_BASE: ${{ github.APP_URL_BASE }}
       WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}
       MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
+      MLFLOW_ARTIFACT_URI: ${{ github.MLFLOW_ARTIFACT_URI }}
       MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
       MLFLOW_TRACKING_HOST: ${{ github.MLFLOW_TRACKING_HOST }}
       MLFLOW_TRACKING_PORT: ${{ github.MLFLOW_TRACKING_PORT }}

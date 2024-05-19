@@ -12,3 +12,4 @@ TRAINING_DATA_PATH = STORE_PATH / "datasets/robot_maintenance/train.pkl"
 MLFLOW_TRACKING_URI = getenv("MLFLOW_TRACKING_URI")
 
 APP_URL_BASE = getenv("APP_URL_BASE", "http://localhost:80")
+MONITORING_ENDPOINT = f"{APP_URL_BASE}/monitoring"

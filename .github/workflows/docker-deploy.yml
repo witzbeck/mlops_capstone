@@ -26,7 +26,6 @@ jobs:
     steps:
       - name: Display User
         run: |
-          chown -R $USER:$USER ~
           echo "Running as user: $(whoami)"
 
       - name: Checkout repository

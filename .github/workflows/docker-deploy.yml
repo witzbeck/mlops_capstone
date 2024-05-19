@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: [self-hosted]
     env:
+      ENVIRONMENT: build
+      PYTHONDONTWRITEBYTECODE: 1
       LOG_LEVEL: ${{ github.LOG_LEVEL }}
       HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -18,7 +20,8 @@ jobs:
       WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}
       MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
       MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
-      MLFLOW_PORT: ${{ github.MLFLOW_PORT }}
+      MLFLOW_TRACKING_HOST: ${{ github.MLFLOW_TRACKING_HOST }}
+      MLFLOW_TRACKING_PORT: ${{ github.MLFLOW_TRACKING_PORT }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -26,11 +29,14 @@ jobs:
     steps:
       - name: Display User
         run: |
-          chown -R $USER:$USER ~
           echo "Running as user: $(whoami)"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Create .env file from envs
         run: |
@@ -48,13 +54,12 @@ jobs:
           echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
 
       - name: Bring down Docker Compose services
-        if: github.event_name != 'pull_request'
         run: docker-compose down || true # Ignore errors if services are not running
 
-      - name: Build images
-        run: docker-compose build
-
       - name: Bring up Docker Compose services and verify
-        if: github.event_name != 'pull_request'
         run: |
           docker-compose up --build --detach --remove-orphans
+
+      - name: Bring down Docker Compose services
+        if: github.event_name == 'pull_request'
+        run: docker-compose down || true # Ignore errors if services are not running

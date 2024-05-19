@@ -4,8 +4,9 @@ Module to train and prediction using XGBoost Classifier
 # !/usr/bin/env python
 # coding: utf-8
 
+from json import load
 from logging import DEBUG, basicConfig, getLogger
-from os import getenv
+from os import getenv, makedirs
 from pathlib import Path
 from sys import exit
 from warnings import filterwarnings
@@ -13,32 +14,73 @@ from warnings import filterwarnings
 from joblib import dump
 from mlflow import (
     create_experiment,
-    get_experiment_by_name,
     log_artifact,
-    log_metric,
-    search_runs,
+    log_metrics,
     set_experiment,
     set_tracking_uri,
     start_run,
-    xgboost,
 )
-from numpy import array, count_nonzero, ravel
-from pandas import DataFrame, concat, read_pickle
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import RobustScaler
-from xgboost import DMatrix, train
+
+from app.extract import PDFExtractor
+from app.__init__ import MLFLOW_TRACKING_URI
 
 STORE_PATH = Path("/app/store")
 OUTPUTS_PATH = STORE_PATH / "outputs"
-TRAINING_DATA_PATH = STORE_PATH / "datasets/robot_maintenance/train.pkl"
-tracking_uri = getenv("MLFLOW_TRACKING_URI")
+TRAINING_DATA_PATH = STORE_PATH / "training_data"
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 filterwarnings("ignore")
 
 
-class RoboMaintenance:
+# Constants
+NUM_PDFS = 100
+
+# Setup MLflow
+set_tracking_uri(getenv("MLFLOW_TRACKING_URI"))
+set_experiment("PDF_Model_Training")
+
+
+# Function to generate PDFs and their expected outputs
+def generate_pdfs(
+    num_pdfs: int,
+    output_dir: Path = TRAINING_DATA_PATH,
+) -> list[tuple[str, str]]:
+    makedirs(output_dir, exist_ok=True)
+    data_pairs = []
+
+    for i in range(num_pdfs):
+        pdf_path = f"{output_dir}/doc_{i}.pdf"
+        json_path = f"{output_dir}/doc_{i}.json"
+
+        # Simulate structured data for PDF content
+        content = {"title": f"Document {i}", "section": f"Content of document {i}"}
+        expected_output = {
+            "title": content["title"],
+            "content": content["section"],
+            "summary": f"This is a summary of document {i}.",
+        }
+
+        # Create a PDF file using ReportLab
+        pdf = canvas.Canvas(pdf_path, pagesize=letter)
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(72, 750, content["title"])  # Positioning text at x=72, y=750
+        pdf.drawString(72, 730, content["section"])  # Positioning text at x=72, y=730
+        pdf.save()
+
+        # Write the expected output
+        with open(json_path, "w") as f:
+            dump(expected_output, f)
+
+        data_pairs.append((pdf_path, json_path))
+
+    return data_pairs
+
+
+class PDFExtraction:
     def __init__(self, model_name: str):
         self.model_name = model_name
         self.file = None
@@ -52,11 +94,11 @@ class RoboMaintenance:
         self.robust_scaler = None
         self.run_id = None
         self.active_experiment = None
-        self.xgb_model = None
+        self.vision_model = None
 
     def mlflow_tracking(
         self,
-        tracking_uri: str = tracking_uri,
+        tracking_uri: str = MLFLOW_TRACKING_URI,
         experiment: str = None,
         new_experiment: str = None,
     ):
@@ -72,104 +114,41 @@ class RoboMaintenance:
             set_experiment(experiment)
             self.active_experiment = experiment
 
-    def process_data(self, file: str, test_size: int = 0.25):
-        """processes raw data for training
-
-        Parameters
-        ----------
-        file : str
-            path to raw training data
-        test_size : int, optional
-            percentage of data reserved for testing, by default .25
-        """
-
-        # Generating our data
-        logger.info("Reading the dataset from %s...", file)
-        try:
-            data = read_pickle(file)
-        except FileNotFoundError:
-            exit("Dataset file not found")
-
-        X = data.drop("Asset_Label", axis=1)
-        y = data.Asset_Label
-
-        X_train, X_test, self.y_train, self.y_test = train_test_split(
-            X, y, test_size=test_size
-        )
-
-        df_num_train = X_train.select_dtypes(["float", "int", "int32"])
-        df_num_test = X_test.select_dtypes(["float", "int", "int32"])
-        self.robust_scaler = RobustScaler()
-        X_train_scaled = self.robust_scaler.fit_transform(df_num_train)
-        X_test_scaled = self.robust_scaler.transform(df_num_test)
-
-        # Making them pandas dataframes
-        X_train_scaled_transformed = DataFrame(
-            X_train_scaled, index=df_num_train.index, columns=df_num_train.columns
-        )
-        X_test_scaled_transformed = DataFrame(
-            X_test_scaled, index=df_num_test.index, columns=df_num_test.columns
-        )
-
-        del X_train_scaled_transformed["Number_Repairs"]
-
-        del X_test_scaled_transformed["Number_Repairs"]
-
-        # Dropping the unscaled numerical columns
-        X_train = X_train.drop(
-            ["Age", "Temperature", "Last_Maintenance", "Motor_Current"], axis=1
-        )
-        X_test = X_test.drop(
-            ["Age", "Temperature", "Last_Maintenance", "Motor_Current"], axis=1
-        )
-
-        X_train = X_train.astype(int)
-        X_test = X_test.astype(int)
-
-        # Creating train and test data with scaled numerical columns
-        X_train_scaled_transformed = concat(
-            [X_train_scaled_transformed, X_train], axis=1
-        )
-        X_test_scaled_transformed = concat([X_test_scaled_transformed, X_test], axis=1)
-
-        self.X_train_scaled_transformed = X_train_scaled_transformed.astype(
-            {"Motor_Current": "float64"}
-        )
-        self.X_test_scaled_transformed = X_test_scaled_transformed.astype(
-            {"Motor_Current": "float64"}
-        )
-
-    def train(self, ncpu: int = 4):
-        """trains an XGBoost Classifier and Tracks Models with MLFlow
+    def train(self, data_pairs: list[tuple[str, str]]):
+        """trains the model and logs the model as mlflow artifact
 
         Parameters
         ----------
         ncpu : int, optional
             number of CPU threads used for training, by default 4
         """
+        train_data, val_data = train_test_split(
+            data_pairs, test_size=0.2, random_state=42
+        )
 
-        # Set xgboost parameters
-        self.parameters = {
-            "max_bin": 256,
-            "scale_pos_weight": 2,
-            "lambda_l2": 1,
-            "alpha": 0.9,
-            "max_depth": 8,
-            "num_leaves": 2**8,
-            "verbosity": 0,
-            "objective": "multi:softmax",
-            "learning_rate": 0.3,
-            "num_class": 3,
-            "nthread": ncpu,
-        }
+        extractor = PDFExtractor(MLFLOW_TRACKING_URI)
 
-        xgboost.autolog()
-        xgb_train = DMatrix(self.X_train_scaled_transformed, label=array(self.y_train))
-        self.xgb_model = train(self.parameters, xgb_train, num_boost_round=100)
+        for phase, data in [("train", train_data), ("validation", val_data)]:
+            with start_run():
+                for pdf_path, json_path in data:
+                    logger.info(f"Extracting {phase} data using the PDFExtractor")
+                    extracted_data = extractor.extract_data(pdf_path, input_type="file")
 
-        # store run id for user in other methods
-        xp = get_experiment_by_name(self.active_experiment)._experiment_id
-        self.run_id = search_runs(xp, output_format="list")[0].info.run_id
+                    # Read the expected data
+                    with open(json_path, "r") as f:
+                        expected_data = load(f)
+
+                    # Calculate performance metrics (e.g., accuracy)
+                    accuracy = sum(
+                        1
+                        for key in extracted_data
+                        if extracted_data.get(key) == expected_data.get(key)
+                    ) / len(expected_data)
+
+                    # Log to MLflow
+                    log_metrics({"accuracy": accuracy})
+
+                    print(f"Processed {pdf_path}: Accuracy = {accuracy}")
 
     def validate(self):
         """performs model validation with testing data
@@ -179,17 +158,11 @@ class RoboMaintenance:
         float
             accuracy metric
         """
-
-        # calculate accuracy
-        dtest = DMatrix(self.X_test_scaled_transformed, self.y_test)
-        xgb_prediction = self.xgb_model.predict(dtest)
-        xgb_errors_count = count_nonzero(xgb_prediction - ravel(self.y_test))
-        self.accuracy_scr = 1 - xgb_errors_count / xgb_prediction.shape[0]
-
-        # log accuracy metric with mlflow
-        with start_run(self.run_id):
-            log_metric("accuracy", self.accuracy_scr)
-
+        logger.info("Validating model")
+        self.accuracy_scr = self.vision_model.score(
+            self.X_test_scaled_transformed, self.y_test
+        )
+        logger.info(f"Accuracy: {self.accuracy_scr}")
         return self.accuracy_scr
 
     def save(self, model_path):
@@ -210,3 +183,12 @@ class RoboMaintenance:
         logger.info("Saving Scaler as MLFLow Artifact")
         with start_run(self.run_id):
             log_artifact(self.scaler_path)
+
+
+if __name__ == "__main__":
+    data_pairs = generate_pdfs(NUM_PDFS)
+    extractor = PDFExtraction("PDFExtraction")
+    extractor.mlflow_tracking(MLFLOW_TRACKING_URI)
+    extractor.train(data_pairs)
+    logger.info("Training completed successfully")
+    exit(0)

@@ -1,15 +1,23 @@
 from base64 import b64decode
-from typing import Optional
+from dataclasses import asdict, dataclass
+from json import loads
+from typing import List, Optional
 
-from pydantic import BaseModel, HttpUrl, field_validator
+from faker import Faker
+from pydantic import BaseModel, HttpUrl, field_validator, ConfigDict
+
+# Declare no protected namespaces so that "model" can be used as a field name
+config = ConfigDict(protected_namespaces=())
 
 
-class ImageInput(BaseModel):
-    image_base64: Optional[str] = None
-    image_url: Optional[HttpUrl] = None
-    image_file: Optional[bytes] = None
+class InputModel(BaseModel):
+    """Handles image input in base64, URL, or file format."""
 
-    @field_validator("image_base64", pre=True, always=True)
+    input_base64: Optional[str] = None
+    input_url: Optional[HttpUrl] = None
+    input_file: Optional[bytes] = None
+
+    @field_validator("input_base64")
     def validate_base64(cls, v, values):
         if v is not None:
             # Try to decode to verify if it is correct base64
@@ -21,46 +29,72 @@ class ImageInput(BaseModel):
         if (
             sum(
                 x is not None
-                for x in [v, values.get("image_url"), values.get("image_file")]
+                for x in [v, values.get("input_url"), values.get("input_file")]
             )
             > 1
         ):
             raise ValueError("Please provide only one type of image input")
         return v
 
-    @field_validator("image_url", pre=True, always=True)
+    @field_validator("input_url")
     def validate_url(cls, v, values):
         # Ensure only one input is provided
         if (
             sum(
                 x is not None
-                for x in [values.get("image_base64"), v, values.get("image_file")]
+                for x in [values.get("input_base64"), v, values.get("input_file")]
             )
             > 1
         ):
             raise ValueError("Please provide only one type of image input")
         return v
 
-    @field_validator("image_file", pre=True, always=True)
+    @field_validator("input_file")
     def validate_file(cls, v, values):
         # Ensure only one input is provided
         if (
             sum(
                 x is not None
-                for x in [values.get("image_base64"), values.get("image_url"), v]
+                for x in [values.get("input_base64"), values.get("input_url"), v]
             )
             > 1
         ):
             raise ValueError("Please provide only one type of image input")
         return v
 
+    def to_dict(self):
+        """Convert the instance to a dictionary."""
+        return asdict(self)
 
-class PDFInputModel(BaseModel):
-    pdf_file: bytes  # Uploaded PDF file data
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Create a new instance from a dictionary."""
+        return cls(**data)
+
+    @classmethod
+    def from_json(cls, json_str: str):
+        """Create a new instance from a JSON string."""
+        return cls.from_dict(loads(json_str))
+
+    def __post_init__(self):
+        """Initialize the data model."""
+        if self.input_base64 is not None:
+            self.image_base64 = b64decode(self.input_base64)
+        if self.input_file is not None:
+            self.input_file = b64decode(self.input_file)
+
+
+class ImageInputModel(InputModel):
+    """Handles image input in base64, URL, or file format."""
+
+
+class PDFInputModel(InputModel):
+    """Handles PDF input in base64, URL, or file format."""
 
 
 # Assuming we will extract and return structured data as a dictionary
 class ExtractedDataModel(BaseModel):
+    input_model: InputModel
     title: Optional[str] = None
     content: Optional[str] = None
     author: Optional[str] = None
@@ -85,3 +119,256 @@ class PredictionPayload(BaseModel):
     model_run_id: str
     scaler_file_name: str
     scaler_destination: str = "./"
+
+
+@dataclass
+class OutputModelBase:
+    """Base class for all data models."""
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Create a new instance from a dictionary."""
+        return cls(**data)
+
+    @classmethod
+    def from_json(cls, json_str: str):
+        """Create a new instance from a JSON string."""
+        return cls.from_dict(loads(json_str))
+
+    def to_dict(self):
+        """Convert the instance to a dictionary."""
+        return asdict(self)
+
+    @classmethod
+    def rand(cls):
+        """Generate a random instance for testing."""
+        raise NotImplementedError
+
+
+@dataclass
+class Address(OutputModelBase):
+    """Represents a typical address and can be reused for both agency and insured addresses."""
+
+    line1: str
+    line2: Optional[str]
+    city: str
+    state: str
+    zip_code: str
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "Address":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            line1=faker.street_address(),
+            line2=faker.secondary_address()
+            if faker.boolean(chance_of_getting_true=50)
+            else None,
+            city=faker.city(),
+            state=faker.state_abbr(),
+            zip_code=faker.zipcode(),
+        )
+
+
+@dataclass
+class ContactInfo(OutputModelBase):
+    """Handles contact details like phone, fax, and email."""
+
+    full_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone_number: str
+    phone_type: str
+    fax_number: Optional[str]
+    email: str
+    mailing_address: Address
+    physical_address: Address
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "ContactInfo":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            full_name=faker.name(),
+            first_name=faker.first_name(),
+            last_name=faker.last_name(),
+            phone_number=faker.phone_number(),
+            phone_type=faker.random_element(elements=("Home", "Work", "Mobile", "Fax")),
+            fax_number=faker.phone_number()
+            if faker.boolean(chance_of_getting_true=50)
+            else None,
+            email=faker.email(),
+            mailing_address=Address.rand(faker=faker),
+            physical_address=Address.rand(faker=faker),
+        )
+
+
+@dataclass
+class Agency(OutputModelBase):
+    """Defines agency-specific information, including the contact and address."""
+
+    agency_name: str
+    agency_code: str
+    contact_info: ContactInfo
+    address: Address
+    customer_id: str
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "Agency":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            agency_name=faker.company(),
+            agency_code=faker.random_int(min=1000, max=9999),
+            contact_info=ContactInfo.rand(faker=faker),
+            address=Address.rand(faker=faker),
+            customer_id=faker.random_int(min=1000, max=9999),
+        )
+
+
+@dataclass
+class InsuredInfo(OutputModelBase):
+    """Represents the insured or additional insureds' details,
+    such as name and NAICS code."""
+
+    name: str
+    mailing_address: Address
+    naics_code: str
+    sic_code: str
+    fein_or_ssn: str
+    website_address: Optional[str]
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "InsuredInfo":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            name=faker.company(),
+            mailing_address=Address.rand(faker=faker),
+            naics_code=faker.random_int(min=1000, max=9999),
+            sic_code=faker.random_int(min=1000, max=9999),
+            fein_or_ssn=faker.ssn(),
+            website_address=faker.url()
+            if faker.boolean(chance_of_getting_true=50)
+            else None,
+        )
+
+
+@dataclass
+class PolicyInfo(OutputModelBase):
+    """Encapsulates details about the policy,
+    such as effective dates, lines of business, and premiums."""
+
+    proposed_eff_date: str
+    proposed_exp_date: str
+    lines_of_business: List[str]
+    premium_details: dict  # Could be a detailed breakdown
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "PolicyInfo":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            proposed_eff_date=faker.date_this_year(),
+            proposed_exp_date=faker.date_this_year(),
+            lines_of_business=faker.random_elements(
+                elements=("Collision", "Comprehensive", "Liability"),
+                length=faker.random_int(min=1, max=3),
+                unique=True,
+            ),
+            premium_details={
+                "Collision": faker.random_int(min=1000, max=9999),
+                "Comprehensive": faker.random_int(min=1000, max=9999),
+                "Liability": faker.random_int(min=1000, max=9999),
+            },
+        )
+
+
+@dataclass
+class BusinessInfo(OutputModelBase):
+    """Stores detailed information about the business entity type, operation descriptions, and employee statistics."""
+
+    entity_type: str
+    number_of_members: Optional[int]
+    description_of_operations: str
+    business_started_date: str
+    annual_revenue: float
+    no_of_employees_fulltime: int
+    no_of_employees_parttime: int
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "BusinessInfo":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            entity_type=faker.random_element(
+                elements=("Corporation", "Partnership", "Sole Proprietorship")
+            ),
+            number_of_members=faker.random_int(min=1, max=10)
+            if faker.boolean(chance_of_getting_true=50)
+            else None,
+            description_of_operations=faker.catch_phrase(),
+            business_started_date=faker.date_this_century(),
+            annual_revenue=faker.random_int(min=10000, max=99999),
+            no_of_employees_fulltime=faker.random_int(min=1, max=10),
+            no_of_employees_parttime=faker.random_int(min=1, max=10),
+        )
+
+
+@dataclass
+class Coverage(OutputModelBase):
+    """Represents different coverage types and their respective premiums."""
+
+    line_of_business: str
+    coverage_code: str
+    premium: float
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "Coverage":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            line_of_business=faker.random_element(
+                elements=("Collision", "Comprehensive", "Liability")
+            ),
+            coverage_code=faker.random_int(min=1000, max=9999),
+            premium=faker.random_int(min=1000, max=9999),
+        )
+
+
+@dataclass
+class Application(OutputModelBase):
+    """The top-level class that ties all the other pieces together
+    into a complete application form as defined by the PDF."""
+
+    agency: Agency
+    first_named_insured: InsuredInfo
+    additional_insureds: List[InsuredInfo]
+    policy_info: PolicyInfo
+    business_info: BusinessInfo
+    coverages: List[Coverage]
+
+    @classmethod
+    def rand(cls, faker: Faker = None) -> "Application":
+        """Generate a random instance for testing."""
+        if faker is None:
+            faker = Faker()
+        return cls(
+            agency=Agency.rand(faker),
+            first_named_insured=InsuredInfo.rand(faker),
+            additional_insureds=[
+                InsuredInfo.rand(faker) for _ in range(faker.random_int(min=0, max=3))
+            ],
+            policy_info=PolicyInfo.rand(faker),
+            business_info=BusinessInfo.rand(faker),
+            coverages=[
+                Coverage.rand(faker) for _ in range(faker.random_int(min=1, max=3))
+            ],
+        )

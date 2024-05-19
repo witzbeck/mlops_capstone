@@ -20,3 +20,6 @@ COPY ./postgres-$ENVIRONMENT.conf /etc/postgresql/postgresql.conf
 # Copy the initialization scripts to the container
 COPY ./init_scripts/*.sql /docker-entrypoint-initdb.d/
 COPY ./init_scripts/*.sh /docker-entrypoint-initdb.d/
+COPY ./init_scripts/00_01_init.sh /app/prestart.sh
+
+RUN pip install psycopg2-binary --no-cache-dir

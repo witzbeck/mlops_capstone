@@ -3,23 +3,23 @@ name = "app"
 version = "0.2.0"
 description = ""
 authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
-packages = [
-    { include = "app", from = "." },
-]
+packages = [{ include = "app", from = "." }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-uvicorn = "*"
-gunicorn = "*"
-fastapi = "*"
-daal4py = "*"
-xgboost = "*"
-scikit-learn-intelex = "*"
-mlflow = "*"
-pydantic = "*"
+python = "^3.9"
 pytesseract = "*"
 pdf2image = "*"
 pdfplumber = "*"
+faker = "^25.2.0"
+pandas = "^2.2.2"
+fastapi = "*"
+gunicorn = "*"
+mlflow = "*"
+pydantic = "^2.7.1"
+uvicorn = "*"
+psycopg2-binary = "*"
+sqlalchemy = "*"
+reportlab = "*"
 
 [build-system]
 requires = ["poetry-core"]

@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: [self-hosted]
     env:
+      PYTHONDONTWRITEBYTECODE: 1
       LOG_LEVEL: ${{ github.LOG_LEVEL }}
       HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -27,9 +28,11 @@ jobs:
       - name: Display User
         run: |
           echo "Running as user: $(whoami)"
+          sudo chmod -R 777 ${{ github.workspace }}
 
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

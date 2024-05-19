@@ -13,6 +13,15 @@ services:
       - ./frontend:/frontend
     ports:
       - "80:80"
+    environment:
+      - ENVIROMENT=$ENVIRONMENT
+      - FASTAPI_PORT=$FASTAPI_PORT
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
+      - MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
+      - MLFLOW_STORE_URI=$MLFLOW_STORE_URI
+      - MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI
     env_file:
       - .env
     depends_on:

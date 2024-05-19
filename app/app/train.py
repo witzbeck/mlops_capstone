@@ -25,7 +25,7 @@ from reportlab.pdfgen import canvas
 from sklearn.model_selection import train_test_split
 
 from app.extract import PDFExtractor
-from constants import MLFLOW_TRACKING_URI
+from app.__init__ import MLFLOW_TRACKING_URI
 
 STORE_PATH = Path("/app/store")
 OUTPUTS_PATH = STORE_PATH / "outputs"

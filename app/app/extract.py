@@ -53,6 +53,8 @@ def process_pdf(pdf_path: Path, use_multiprocessing=True) -> str:
     """Extracts text from PDF using pdfplumber and OCR, then compares the results"""
     if isinstance(pdf_path, bytes):
         return convert_from_bytes(pdf_path, single_file=True)[0]
+    if isinstance(pdf_path, str):
+        pdf_path = Path(pdf_path)
     if not pdf_path.exists():
         raise FileNotFoundError(f"PDF file not found: {pdf_path}")
     if use_multiprocessing:
@@ -88,7 +90,6 @@ class PDFExtractor:
         response = get(url)
         response.raise_for_status()
         return self.process_pdf(BytesIO(response.content))
-
 
     def structure_data(self, raw_text):
         # This method should be implemented to structure raw text into a dictionary

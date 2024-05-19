@@ -200,6 +200,8 @@ class ContactInfo(OutputModelBase):
             if faker.boolean(chance_of_getting_true=50)
             else None,
             email=faker.email(),
+            mailing_address=Address.rand(faker=faker),
+            physical_address=Address.rand(faker=faker),
         )
 
 

@@ -6,7 +6,7 @@ authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
 packages = [{ include = "app", from = "." }]
 
 [tool.poetry.dependencies]
-python = "^3.10, <3.12"
+python = "^3.9"
 pytesseract = "*"
 pdf2image = "*"
 pdfplumber = "*"
@@ -17,7 +17,7 @@ gunicorn = "*"
 mlflow = "*"
 pydantic = "^2.7.1"
 uvicorn = "*"
-psycopg2-binary = "*"   
+psycopg2-binary = "*"
 sqlalchemy = "*"
 reportlab = "*"
 

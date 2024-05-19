@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: [self-hosted]
     env:
+      ENVIRONMENT: build
       PYTHONDONTWRITEBYTECODE: 1
       LOG_LEVEL: ${{ github.LOG_LEVEL }}
       HF_MODEL_NAME: ${{ github.HF_MODEL_NAME }}
@@ -19,7 +20,8 @@ jobs:
       WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}
       MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
       MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
-      MLFLOW_PORT: ${{ github.MLFLOW_PORT }}
+      MLFLOW_TRACKING_HOST: ${{ github.MLFLOW_TRACKING_HOST }}
+      MLFLOW_TRACKING_PORT: ${{ github.MLFLOW_TRACKING_PORT }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -30,7 +32,7 @@ jobs:
           echo "Running as user: $(whoami)"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Checkout repository
         uses: actions/checkout@v4

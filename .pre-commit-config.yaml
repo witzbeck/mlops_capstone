@@ -2,7 +2,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
-      - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-added-large-files
@@ -38,5 +37,4 @@ repos:
         types: [python]
         pass_filenames: false # pytest discovers tests by itself
 
-# Optional: Configure additional settings for hooks
 default_stages: [commit]

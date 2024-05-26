@@ -1,7 +1,7 @@
 FROM ghcr.io/mlflow/mlflow:v2.12.2
 
-RUN pip3 install --user --no-cache-dir psycopg2 sqlalchemy
-RUN pip3 install --no-cache-dir psycopg2 sqlalchemy
+RUN pip3 install --user --no-cache-dir psycopg sqlalchemy
+RUN pip3 install --no-cache-dir psycopg sqlalchemy
 
 # ARG POSTGRES_HOST
 # ARG POSTGRES_PORT
@@ -13,7 +13,7 @@ RUN pip3 install --no-cache-dir psycopg2 sqlalchemy
 # ARG MLFLOW_TRACKING_NAME
 # ARG MLFLOW_TRACKING_USER
 # ARG MLFLOW_TRACKING_PASSWORD
-ARG MLFLOW_STORE_URI
+# ARG MLFLOW_STORE_URI
 
 # Set the environment variables
 # ENV POSTGRES_HOST=$POSTGRES_HOST
@@ -33,4 +33,6 @@ ENV MLFLOW_TRACKING_PASSWORD=$MLFLOW_TRACKING_PASSWORD
 ENV MLFLOW_STORE_URI=$MLFLOW_STORE_URI
 
 # Set the working directory
+RUN ls -la && sleep 10
 WORKDIR /mlflow
+RUN ls -la && sleep 10

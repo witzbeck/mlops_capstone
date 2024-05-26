@@ -39,7 +39,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-
       - name: Create .env file from envs
         run: |
           echo "Running as user: $(whoami)"

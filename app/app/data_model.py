@@ -4,11 +4,125 @@ from json import loads
 from typing import List, Optional
 
 from faker import Faker
-from pydantic import BaseModel, HttpUrl, field_validator
+from pydantic import BaseModel, HttpUrl, field_validator, ConfigDict
+
+# Declare no protected namespaces so that "model" can be used as a field name
+config = ConfigDict(protected_namespaces=())
+
+
+class InputModel(BaseModel):
+    """Handles image input in base64, URL, or file format."""
+
+    input_base64: Optional[str] = None
+    input_url: Optional[HttpUrl] = None
+    input_file: Optional[bytes] = None
+
+    @field_validator("input_base64")
+    def validate_base64(cls, v, values):
+        if v is not None:
+            # Try to decode to verify if it is correct base64
+            try:
+                b64decode(v)
+            except ValueError as e:
+                raise ValueError(f"Invalid base64 string {e}") from e
+        # Ensure only one input is provided
+        if (
+            sum(
+                x is not None
+                for x in [v, values.get("input_url"), values.get("input_file")]
+            )
+            > 1
+        ):
+            raise ValueError("Please provide only one type of image input")
+        return v
+
+    @field_validator("input_url")
+    def validate_url(cls, v, values):
+        # Ensure only one input is provided
+        if (
+            sum(
+                x is not None
+                for x in [values.get("input_base64"), v, values.get("input_file")]
+            )
+            > 1
+        ):
+            raise ValueError("Please provide only one type of image input")
+        return v
+
+    @field_validator("input_file")
+    def validate_file(cls, v, values):
+        # Ensure only one input is provided
+        if (
+            sum(
+                x is not None
+                for x in [values.get("input_base64"), values.get("input_url"), v]
+            )
+            > 1
+        ):
+            raise ValueError("Please provide only one type of image input")
+        return v
+
+    def to_dict(self):
+        """Convert the instance to a dictionary."""
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Create a new instance from a dictionary."""
+        return cls(**data)
+
+    @classmethod
+    def from_json(cls, json_str: str):
+        """Create a new instance from a JSON string."""
+        return cls.from_dict(loads(json_str))
+
+    def __post_init__(self):
+        """Initialize the data model."""
+        if self.input_base64 is not None:
+            self.image_base64 = b64decode(self.input_base64)
+        if self.input_file is not None:
+            self.input_file = b64decode(self.input_file)
+
+
+class ImageInputModel(InputModel):
+    """Handles image input in base64, URL, or file format."""
+
+
+class PDFInputModel(InputModel):
+    """Handles PDF input in base64, URL, or file format."""
+
+
+# Assuming we will extract and return structured data as a dictionary
+class ExtractedDataModel(BaseModel):
+    input_model: InputModel
+    title: Optional[str] = None
+    content: Optional[str] = None
+    author: Optional[str] = None
+    number_of_pages: Optional[int] = None
+
+
+class TrainPayload(BaseModel):
+    file: str
+    model_name: str
+    model_path: str
+    test_size: int = 25
+    ncpu: int = 4
+    mlflow_tracking_uri: str
+    mlflow_new_experiment: str = None
+    mlflow_experiment: str = None
+
+
+class PredictionPayload(BaseModel):
+    model_name: str
+    stage: str
+    sample: list
+    model_run_id: str
+    scaler_file_name: str
+    scaler_destination: str = "./"
 
 
 @dataclass
-class DataModelBase:
+class OutputModelBase:
     """Base class for all data models."""
 
     @classmethod
@@ -32,7 +146,7 @@ class DataModelBase:
 
 
 @dataclass
-class Address(DataModelBase):
+class Address(OutputModelBase):
     """Represents a typical address and can be reused for both agency and insured addresses."""
 
     line1: str
@@ -58,7 +172,7 @@ class Address(DataModelBase):
 
 
 @dataclass
-class ContactInfo(DataModelBase):
+class ContactInfo(OutputModelBase):
     """Handles contact details like phone, fax, and email."""
 
     full_name: str
@@ -86,11 +200,13 @@ class ContactInfo(DataModelBase):
             if faker.boolean(chance_of_getting_true=50)
             else None,
             email=faker.email(),
+            mailing_address=Address.rand(faker=faker),
+            physical_address=Address.rand(faker=faker),
         )
 
 
 @dataclass
-class Agency(DataModelBase):
+class Agency(OutputModelBase):
     """Defines agency-specific information, including the contact and address."""
 
     agency_name: str
@@ -114,7 +230,7 @@ class Agency(DataModelBase):
 
 
 @dataclass
-class InsuredInfo(DataModelBase):
+class InsuredInfo(OutputModelBase):
     """Represents the insured or additional insureds' details,
     such as name and NAICS code."""
 
@@ -143,7 +259,7 @@ class InsuredInfo(DataModelBase):
 
 
 @dataclass
-class PolicyInfo(DataModelBase):
+class PolicyInfo(OutputModelBase):
     """Encapsulates details about the policy,
     such as effective dates, lines of business, and premiums."""
 
@@ -174,7 +290,7 @@ class PolicyInfo(DataModelBase):
 
 
 @dataclass
-class BusinessInfo(DataModelBase):
+class BusinessInfo(OutputModelBase):
     """Stores detailed information about the business entity type, operation descriptions, and employee statistics."""
 
     entity_type: str
@@ -206,7 +322,7 @@ class BusinessInfo(DataModelBase):
 
 
 @dataclass
-class Coverage(DataModelBase):
+class Coverage(OutputModelBase):
     """Represents different coverage types and their respective premiums."""
 
     line_of_business: str
@@ -228,7 +344,7 @@ class Coverage(DataModelBase):
 
 
 @dataclass
-class Application(DataModelBase):
+class Application(OutputModelBase):
     """The top-level class that ties all the other pieces together
     into a complete application form as defined by the PDF."""
 
@@ -256,182 +372,3 @@ class Application(DataModelBase):
                 Coverage.rand(faker) for _ in range(faker.random_int(min=1, max=3))
             ],
         )
-
-
-class ImageInput(BaseModel):
-    """Handles image input in base64, URL, or file format."""
-
-    image_base64: Optional[str] = None
-    image_url: Optional[HttpUrl] = None
-    image_file: Optional[bytes] = None
-
-    @field_validator(
-        "image_base64",
-    )
-    def validate_base64(cls, v, values):
-        if v is not None:
-            # Try to decode to verify if it is correct base64
-            try:
-                b64decode(v)
-            except ValueError as e:
-                raise ValueError(f"Invalid base64 string {e}") from e
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [v, values.get("image_url"), values.get("image_file")]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of image input")
-        return v
-
-    @field_validator(
-        "image_url",
-    )
-    def validate_url(cls, v, values):
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [values.get("image_base64"), v, values.get("image_file")]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of image input")
-        return v
-
-    @field_validator(
-        "image_file",
-    )
-    def validate_file(cls, v, values):
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [values.get("image_base64"), values.get("image_url"), v]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of image input")
-        return v
-
-    def to_dict(self):
-        """Convert the instance to a dictionary."""
-        return asdict(self)
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Create a new instance from a dictionary."""
-        return cls(**data)
-
-    @classmethod
-    def from_json(cls, json_str: str):
-        """Create a new instance from a JSON string."""
-        return cls.from_dict(loads(json_str))
-
-    def __post_init__(self):
-        """Initialize the data model."""
-        if self.image_base64 is not None:
-            self.image_base64 = b64decode(self.image_base64)
-        if self.image_file is not None:
-            self.image_file = b64decode(self.image_file)
-
-
-class PDFInputModel(BaseModel):
-    pdf_file: bytes  # Uploaded PDF file data
-    pdf_url: Optional[HttpUrl] = None  # URL to download the PDF file
-    pdf_base64: Optional[str] = None  # Base64 encoded PDF file data
-
-    @field_validator(
-        "pdf_base64",
-    )
-    def validate_base64(cls, v, values):
-        if v is not None:
-            # Try to decode to verify if it is correct base64
-            try:
-                b64decode(v)
-            except ValueError as e:
-                raise ValueError(f"Invalid base64 string {e}") from e
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [v, values.get("pdf_url"), values.get("pdf_file")]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of PDF input")
-        return v
-
-    @field_validator(
-        "pdf_url",
-    )
-    def validate_url(cls, v, values):
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [values.get("pdf_base64"), v, values.get("pdf_file")]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of PDF input")
-        return v
-
-    @field_validator(
-        "pdf_file",
-    )
-    def validate_file(cls, v, values):
-        # Ensure only one input is provided
-        if (
-            sum(
-                x is not None
-                for x in [values.get("pdf_base64"), values.get("pdf_url"), v]
-            )
-            > 1
-        ):
-            raise ValueError("Please provide only one type of PDF input")
-        return v
-
-    def to_dict(self):
-        """Convert the instance to a dictionary."""
-        return asdict(self)
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Create a new instance from a dictionary."""
-        return cls(**data)
-
-    @classmethod
-    def from_json(cls, json_str: str):
-        """Create a new instance from a JSON string."""
-        return cls.from_dict(loads(json_str))
-
-
-# Assuming we will extract and return structured data as a dictionary
-class ExtractedDataModel(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
-    author: Optional[str] = None
-    number_of_pages: Optional[int] = None
-
-
-class TrainPayload(BaseModel):
-    file: str
-    model_name: str
-    model_path: str
-    test_size: int = 25
-    ncpu: int = 4
-    mlflow_tracking_uri: str
-    mlflow_new_experiment: str = None
-    mlflow_experiment: str = None
-
-
-class PredictionPayload(BaseModel):
-    model_name: str
-    stage: str
-    sample: list
-    model_run_id: str
-    scaler_file_name: str
-    scaler_destination: str = "./"

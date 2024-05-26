@@ -2,6 +2,7 @@
 # shouldn't check local configs into repo
 poetry.toml
 .pythonversion
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

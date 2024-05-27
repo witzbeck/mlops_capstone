@@ -1,13 +1,18 @@
 from os import environ
 from sys import path
 
-import frontend.constants as const
+from constants import PROJECT_PATH
 
 # Add the project path to the system path
-path.append(str(const.PROJECT_PATH))
+path.append(str(PROJECT_PATH))
 
 # Load the environment variables from the .env file
-dotenv = const.PROJECT_PATH / ".env"
+dotenv = PROJECT_PATH / ".env"
+if not dotenv.exists():
+    dotenv = PROJECT_PATH.parent / ".env"
+
+if not dotenv.exists():
+    raise FileNotFoundError("The .env file was not found.")
 lines = [
     x.split("=") for x in dotenv.read_text().split("\n") if not x.startswith("#") and x
 ]

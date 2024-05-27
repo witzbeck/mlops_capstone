@@ -40,7 +40,7 @@ jobs:
       - name: Check Files and Versions
         run: |
           python --version
-          cd {{ matrix.dir }}
+          cd ${{ matrix.dir }}
           ls -la
           poetry show
 

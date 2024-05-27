@@ -14,9 +14,9 @@ repos:
     rev: v4.6.0
     hooks:
       - id: end-of-file-fixer
-        stages: [commit, push]
+        stages: [commit]
       - id: requirements-txt-fixer
-        stages: [commit, push]
+        stages: [commit]
       - id: trailing-whitespace
       - id: check-added-large-files
         stages: [push]
@@ -29,8 +29,7 @@ repos:
       - id: debug-statements
         stages: [push]
       - id: detect-private-key
-        stages: [commit, push]
-      - id: fix-byte-order-marker
+        stages: [commit]
       - id: mixed-line-ending
         stages: [push]
       - id: check-docstring-first
@@ -52,7 +51,7 @@ repos:
     rev: v1.10.0
     hooks:
       - id: python-use-type-annotations
-        stages: [commit, push]
+        stages: [push]
 
   - repo: local
     hooks:

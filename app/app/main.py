@@ -1,22 +1,18 @@
 """Main FastAPI Application"""
 
-from logging import DEBUG, basicConfig, getLogger
 from os import getenv
-from warnings import filterwarnings
 
 from fastapi import FastAPI
 from pandas import json_normalize
 from uvicorn import run
 
+from app.__init__ import getLogger
 from app.data_model import PredictionPayload, TrainPayload
 from app.inference import inference
-from app.train import RoboMaintenance
 
 app = FastAPI()
 
-basicConfig(level=DEBUG)
 logger = getLogger(__name__)
-filterwarnings("ignore")
 
 
 @app.get("/ping")
@@ -46,7 +42,7 @@ async def train(payload: TrainPayload):
     dict
         Accuracy metrics and other logger feedback on training progress.
     """
-    model = RoboMaintenance(payload.model_name)
+    model = TrainPayload(payload.model_name)
     model.mlflow_tracking(
         tracking_uri=payload.mlflow_tracking_uri,
         new_experiment=payload.mlflow_new_experiment,

@@ -5,25 +5,14 @@ services:
     build:
       context: app
       dockerfile: Dockerfile
-      args:
-        - FASTAPI_PORT
     container_name: app_engine
     volumes:
       - ./app:/app
       - ./frontend:/frontend
-    ports:
-      - "80:80"
-    environment:
-      - ENVIROMENT=$ENVIRONMENT
-      - FASTAPI_PORT=$FASTAPI_PORT
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - POSTGRES_DB=$POSTGRES_DB
-      - MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
-      - MLFLOW_STORE_URI=$MLFLOW_STORE_URI
-      - MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI
     env_file:
       - .env
+    ports:
+      - "80:80"
     depends_on:
       - mlflow
       - database
@@ -37,23 +26,19 @@ services:
 
   database:
     image: postgres:16.2
-    environment:
-      - ENVIROMENT=$ENVIRONMENT
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - POSTGRES_INITDB_ARGS=--data-checksums
     container_name: database_server
-    restart: always
+    env_file:
+      - .env
     volumes:
       - ./database/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./database/init_scripts:/docker-entrypoint-initdb.d
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "5432:5432"
+      - "5435:5432"
     networks:
       - one_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5432/ping"]
+      test: ["CMD", "curl", "-f", "http://localhost:5435/ping"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -63,13 +48,13 @@ services:
       context: frontend
       dockerfile: Dockerfile
     container_name: frontend_server
+    env_file:
+      - .env
     command: ["streamlit", "run", "Home.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     volumes:
       - ./frontend:/frontend
     ports:
       - "8501:8501"
-    env_file:
-      - .env
     depends_on:
       - app
       - database
@@ -84,16 +69,14 @@ services:
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.12.2
-    command: ["mlflow", "server", "--backend-store-uri", "${MLFLOW_STORE_URI}", "--default-artifact-root", "${MLFLOW_ARTIFACT_URI}", "--host", "${MLFLOW_TRACKING_HOST}", "--port", "${MLFLOW_TRACKING_PORT}"]
+    command: ["mlflow", "server",
+            "--backend-store-uri", "${MLFLOW_STORE_URI}",
+            "--default-artifact-root", "${MLFLOW_ARTIFACT_URI}",
+            "--host", "${MLFLOW_TRACKING_HOST}",
+            "--port", "${MLFLOW_TRACKING_PORT}"]
+    env_file:
+      - .env
     container_name: mlflow_server
-    environment:
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-      - MLFLOW_TRACKING_HOST=$MLFLOW_TRACKING_HOST
-      - MLFLOW_TRACKING_PORT=$MLFLOW_TRACKING_PORT
-      - MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI
-      - MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
-      - MLFLOW_STORE_URI=$MLFLOW_STORE_URI
     depends_on:
       - database
     ports:

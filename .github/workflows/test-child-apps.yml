@@ -47,18 +47,18 @@ jobs:
       - name: Add Poetry to PATH
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
-      - name: Load Cached Poetry Dependencies
-        uses: actions/cache@v4
-        id: cache-poetry
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.dir }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.dir }}-poetry-
-            ${{ runner.os }}-poetry-
+      # - name: Load Cached Poetry Dependencies
+      #   uses: actions/cache@v4
+      #   id: cache-poetry
+      #   with:
+      #     path: .venv
+      #     key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.dir }}-${{ hashFiles('**/poetry.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-${{ matrix.dir }}-poetry-
+      #       ${{ runner.os }}-poetry-
 
       - name: Install Test Dependencies
-        if: steps.cache-poetry.outputs.cache-hit != 'true'
+        # if: steps.cache-poetry.outputs.cache-hit != 'true'
         run: |
           cd ${{ matrix.dir }}
           poetry install --with test --no-interaction

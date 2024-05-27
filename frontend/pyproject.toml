@@ -6,7 +6,7 @@ authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
 packages = [{ include = "frontend", from = "." }]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 pandas = "^2.2.2"
 streamlit = "^1.35.0"
 Pillow = "^10.3.0"

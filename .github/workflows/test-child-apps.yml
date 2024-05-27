@@ -37,6 +37,10 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
+      - name: Write DotEnv File
+        run: |
+          python scripts/mk-dotenv.py
+
       - name: Check Files and Versions
         run: |
           python --version

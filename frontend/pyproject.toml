@@ -29,6 +29,14 @@ minversion = "8.2.1"
 addopts = ["--cov=frontend", "--cov-report=xml", "-n", "auto"]
 testpaths = ["tests"]
 
+[tool.pytest.ini_options]
+requires = ["pytest-xdist", "pytest-cov", "pytest-mock"]
+addopts = [
+    "--cov=frontend",
+    "--cov-report=xml"
+]
+paths = ["tests"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -33,6 +33,7 @@ minversion = "8.2.1"
 addopts = ["--cov=app", "--cov-report=xml", "-n", "auto"]
 testpaths = ["tests"]
 
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

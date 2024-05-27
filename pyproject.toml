@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "capstone"
-version = "0.2.0"
+version = "0.3.0"
 description = ""
 authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
 packages = [

@@ -1,8 +1,6 @@
 FROM ghcr.io/mlflow/mlflow:v2.13.0
 
-RUN sudo apt-get update && sudo apt-get install -y libpq-dev python3-dev
-
-RUN pip3 install --user --no-cache-dir psycopg2-binary sqlalchemy
+RUN pip3 install --user --no-cache-dir psycopg2 sqlalchemy
 
 RUN python3 -c "import site; print(site.getusersitepackages())"
 RUN python3 -c "import sys; print(sys.path)"

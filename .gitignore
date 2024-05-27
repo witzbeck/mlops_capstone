@@ -1,4 +1,3 @@
-
 # shouldn't check local configs into repo
 poetry.toml
 .pythonversion
@@ -39,7 +38,10 @@ MANIFEST
 *.manifest
 *.spec
 
-# Installer logs
+# Logs
+*.log
+*.log.*
+logs/
 pip-log.txt
 pip-delete-this-directory.txt
 

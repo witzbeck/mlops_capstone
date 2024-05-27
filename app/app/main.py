@@ -23,6 +23,7 @@ async def ping():
     -------
     API response
         response from server on health status
+
     """
     return {"message": "Server is Running"}
 
@@ -41,6 +42,7 @@ async def train(payload: TrainPayload):
     -------
     dict
         Accuracy metrics and other logger feedback on training progress.
+
     """
     model = TrainPayload(payload.model_name)
     model.mlflow_tracking(
@@ -53,9 +55,9 @@ async def train(payload: TrainPayload):
     logger.info("Data has been successfully processed")
     model.train(payload.ncpu)
     logger.info("Maintenance  Model Successfully Trained")
-    model.save(payload.model_path)
+    model.model_dump(payload.model_path)
     logger.info("Saved Maintenance Model")
-    accuracy_score = model.validate()
+    accuracy_score = model.model_validate()
     return {"msg": "Model trained succesfully", "validation scores": accuracy_score}
 
 

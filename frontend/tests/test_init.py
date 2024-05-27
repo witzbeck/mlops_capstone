@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 
 from __init__ import path
-from constants import PROJECT_PATH
+from frontend.constants import PROJECT_PATH
 
 
 class TestInit(TestCase):

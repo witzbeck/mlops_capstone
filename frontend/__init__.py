@@ -1,7 +1,7 @@
 from os import environ
 from sys import path
 
-from constants import PROJECT_PATH
+from frontend.constants import PROJECT_PATH
 
 # Add the project path to the system path
 path.append(str(PROJECT_PATH))

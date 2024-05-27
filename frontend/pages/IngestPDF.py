@@ -1,4 +1,5 @@
-"""This page is the main interface for uploading and extracting output for the end user."""
+"""This page is the main interface
+for uploading and extracting output for the end user."""
 
 from base64 import b64decode
 
@@ -17,9 +18,9 @@ from streamlit import (
     text_input,
     title,
 )
-
-from constants import APP_URL_BASE
 from utils import process_response
+
+from frontend.constants import APP_URL_BASE
 
 title("Form Recognition & Document Extraction")
 
@@ -83,11 +84,16 @@ with help_tab:
     header("Help")
     markdown(
         """
-        - **Upload PDF/Image**: You can upload PDF files or images directly from your device.
-        - **Image URL**: Provide a direct URL to an image for data extraction.
-        - **Paste Image Data (Base64)**: Paste Base64 encoded image data directly into the text area.
+        - **Upload PDF/Image**:
+            You can upload PDF files or images directly from your device.
+        - **Image URL**:
+            Provide a direct URL to an image for data extraction.
+        - **Paste Image Data (Base64)**:
+            Paste Base64 encoded image data directly into the text area.
 
-        This application allows you to extract structured data from documents in various formats. After choosing your preferred input method and submitting your document, extracted data will be displayed below.
+        This application extracts structured data from documents in various formats.
+        After choosing your preferred input method and submitting your document,
+        extracted data will be displayed below.
 
         **Note:** Ensure the Base64 string or URL is correct and accessible.
         """

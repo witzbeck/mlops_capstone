@@ -1,12 +1,12 @@
 """This page is the main interface for monitoring the performance of the model."""
 
-from requests import get
 from matplotlib.pyplot import subplots, xticks
 from pandas import DataFrame, to_datetime
 from PIL import Image
+from requests import get
 from streamlit import caption, dataframe, divider, image, markdown, pyplot, title
 
-from constants import ASSETS_PATH, MONITORING_ENDPOINT
+from frontend.constants import ASSETS_PATH, MONITORING_ENDPOINT
 
 
 # Example function to fetch data (adapt according to your API)
@@ -23,7 +23,9 @@ title("Monitoring Dashboard")
 stats_image = Image.open(ASSETS_PATH / "stats.png")
 image(stats_image)
 markdown(
-    "###### A simple tool for monitoring the performance of our model. This simple monitoring dashboard will help us track the inference latency and evaluate trends in prediction results."
+    "#### A simple tool for monitoring the performance of our model. \
+    This simple monitoring dashboard will help us track the inference latency \
+        and evaluate trends in prediction results."
 )
 
 markdown("### Record of Inference Results")

@@ -6,9 +6,8 @@ repos:
       - id: poetry-lock
         name: Poetry lock
         entry: ./scripts/poetry-lock-packages.sh
-        # files: "pyproject.toml$" # Only run on pyproject.toml changes
+        always_run: true
         language: system
-        types: [python]
         stages: [commit]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks

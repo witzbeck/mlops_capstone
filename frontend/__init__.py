@@ -11,11 +11,12 @@ dotenv = PROJECT_PATH / ".env"
 if not dotenv.exists():
     dotenv = PROJECT_PATH.parent / ".env"
 
-if not dotenv.exists():
-    raise FileNotFoundError("The .env file was not found.")
-lines = [
-    x.split("=") for x in dotenv.read_text().split("\n") if not x.startswith("#") and x
-]
+if dotenv.exists():
+    lines = [
+        x.split("=")
+        for x in dotenv.read_text().split("\n")
+        if not x.startswith("#") and x
+    ]
 
-# Update the environment variables
-environ.update({x[0]: x[-1] for x in lines if len(x) > 1})
+    # Update the environment variables
+    environ.update({x[0]: x[-1] for x in lines if len(x) > 1})

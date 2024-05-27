@@ -1,4 +1,4 @@
-FROM postgres:16.2
+FROM postgres:latest
 RUN echo "ENVIRONMENT: $ENVIRONMENT"
 
 # Copy the initialization scripts to the container

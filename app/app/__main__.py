@@ -8,20 +8,18 @@ Module to generate dataset for Predictive Asset Maintenance
 # !/usr/bin/env python
 # coding: utf-8
 from argparse import ArgumentParser
-from logging import DEBUG, basicConfig, getLogger
 from os import getenv
-from warnings import filterwarnings
 
 from requests import get
 
-url_base = getenv()
+from app.__init__ import getLogger
+
+url_base = getenv("APP_URL_BASE")
 headers = {"Content-Type": "application/json"}
 
 
 if __name__ == "__main__":
-    basicConfig(level=DEBUG)
     logger = getLogger(__name__)
-    filterwarnings("ignore")
 
     parser = ArgumentParser()
     parser.add_argument("--ping", action="store_true", help="Ping the server")

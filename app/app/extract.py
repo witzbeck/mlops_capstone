@@ -1,19 +1,23 @@
 from base64 import b64decode
+from io import BytesIO
+from json import dumps
 from multiprocessing import Pool, set_start_method
 from pathlib import Path
-from json import dumps
-from io import BytesIO
 
-
-from mlflow import log_param, log_artifact, start_run, set_experiment, set_tracking_uri
-from pdf2image import convert_from_path, convert_from_bytes
+from mlflow import log_artifact, log_param, set_experiment, set_tracking_uri, start_run
+from pdf2image import convert_from_bytes, convert_from_path
 from pdfplumber import open as open_pdf
 from pytesseract import image_to_string
 from requests import get
 
+from app.__init__ import getLogger
+
+logger = getLogger(__name__)
+
 
 def extract_pdf_data(pdf_path: Path) -> str:
     """extracts text from PDF file using pdfplumber"""
+    logger.info(f"Extracting text from PDF: {pdf_path}")
     try:
         with open_pdf(pdf_path) as pdf:
             text = [page.extract_text() for page in pdf.pages if page.extract_text()]
@@ -28,6 +32,7 @@ def extract_pdf_data(pdf_path: Path) -> str:
 
 def extract_ocr_data(pdf_path: Path) -> str:
     """extracts text from PDF file using OCR"""
+    logger.info(f"Extracting text from PDF using OCR: {pdf_path}")
     try:
         images = convert_from_path(pdf_path)
         # Utilize comprehension and join directly to avoid intermediate list storage
@@ -44,6 +49,7 @@ def compare_results(
     result2: str,
 ) -> str:
     """Compares two results and returns the one with the most content"""
+    logger.info("Comparing results")
     if result1 and result2:
         return max(result1, result2, key=len)
     return result1 or result2
@@ -51,6 +57,7 @@ def compare_results(
 
 def process_pdf(pdf_path: Path, use_multiprocessing=True) -> str:
     """Extracts text from PDF using pdfplumber and OCR, then compares the results"""
+    logger.info(f"Processing PDF: {pdf_path}")
     if isinstance(pdf_path, bytes):
         return convert_from_bytes(pdf_path, single_file=True)[0]
     if isinstance(pdf_path, str):
@@ -75,6 +82,9 @@ def process_pdf(pdf_path: Path, use_multiprocessing=True) -> str:
 
 class PDFExtractor:
     def __init__(self, mlflow_tracking_uri: str):
+        logger.info(
+            f"Setting up PDFExtractor with MLFlow tracking URI: {mlflow_tracking_uri}"
+        )
         set_tracking_uri(mlflow_tracking_uri)
         set_experiment("PDF_Extraction")
 
@@ -127,12 +137,6 @@ class PDFExtractor:
                 return final_data
             else:
                 raise ValueError("Data validation failed")
-
-
-# Example usage
-# extractor = PDFExtractor("http://localhost:5000")
-# result = extractor.extract_data("path_to_pdf.pdf", input_type='file')
-# print(result)
 
 
 if __name__ == "__main__":

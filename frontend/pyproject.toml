@@ -19,6 +19,14 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 
+[tool.pytest.ini_options]
+requires = ["pytest-xdist", "pytest-cov", "pytest-mock"]
+addopts = [
+    "--cov=frontend",
+    "--cov-report=xml"
+]
+paths = ["tests"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -55,11 +55,11 @@ jobs:
           echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
 
       - name: Bring down Docker Compose services
-        run: docker-compose down || true # Ignore errors if services are not running
+        run: docker-compose down -v || true # Ignore errors if services are not running
 
       - name: Bring up Docker Compose services and verify
         run: |
-          docker-compose up --build --detach --remove-orphans
+          docker-compose up --build --remove-orphans -d
 
       - name: Bring down Docker Compose services
         if: github.event_name == 'pull_request'

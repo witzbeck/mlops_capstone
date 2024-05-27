@@ -67,6 +67,12 @@ jobs:
       #       ${{ runner.os }}-${{ matrix.dir }}-poetry-
       #       ${{ runner.os }}-poetry-
 
+      - name: Create .env file from envs
+        run: |
+          echo "Running as user: $(whoami)"
+          echo "LOG_LEVEL=${LOG_LEVEL}" >> .env
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> .env
+
       - name: Install Test Dependencies
         # if: steps.cache-poetry.outputs.cache-hit != 'true'
         run: |

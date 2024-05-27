@@ -9,6 +9,8 @@ log_config = basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 filterwarnings("ignore")
 
+from pydantic import ConfigDict
+
 MLFLOW_TRACKING_URI = getenv("MLFLOW_TRACKING_URI")
 MODULE_PATH = Path(__file__).parent
 APP_ROOT = MODULE_PATH.parent

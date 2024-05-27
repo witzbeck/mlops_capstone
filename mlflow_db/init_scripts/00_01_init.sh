@@ -7,4 +7,4 @@ psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB T
 
 # Applying database migrations for MLflow
 echo "Applying database migrations for MLflow"
-mlflow db upgrade postgresql+psycopg2://$MLFLOW_TRACKING_USER:$MLFLOW_TRACKING_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$MLFLOW_TRACKING_NAME
+mlflow db upgrade postgresql+psycopg://$MLFLOW_TRACKING_USER:$MLFLOW_TRACKING_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$MLFLOW_TRACKING_NAME

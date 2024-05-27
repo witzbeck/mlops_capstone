@@ -4,10 +4,7 @@ from json import loads
 from typing import List, Optional
 
 from faker import Faker
-from pydantic import BaseModel, HttpUrl, field_validator, ConfigDict
-
-# Declare no protected namespaces so that "model" can be used as a field name
-config = ConfigDict(protected_namespaces=())
+from pydantic import BaseModel, HttpUrl, field_validator
 
 
 class InputModel(BaseModel):

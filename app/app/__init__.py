@@ -1,6 +1,8 @@
 from os import getenv
 from pathlib import Path
 
+from pydantic import ConfigDict
+
 MLFLOW_TRACKING_URI = getenv("MLFLOW_TRACKING_URI")
 MODULE_PATH = Path(__file__).parent
 APP_ROOT = MODULE_PATH.parent
@@ -24,6 +26,8 @@ if not TEMPLATE_PATH.exists():
 (DATASET_STORE_PATH := STORE_PATH / "datasets").mkdir(exist_ok=True, parents=True)
 (OUTPUT_STORE_PATH := STORE_PATH / "outputs").mkdir(exist_ok=True, parents=True)
 
+# Declare no protected namespaces so that "model" can be used as a field name
+config = ConfigDict(protected_namespaces=())
 
 if __name__ == "__main__":
     for path in (DOCSTORE_PATH).iterdir():

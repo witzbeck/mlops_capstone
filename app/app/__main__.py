@@ -9,12 +9,12 @@ Module to generate dataset for Predictive Asset Maintenance
 # coding: utf-8
 from argparse import ArgumentParser
 from logging import DEBUG, basicConfig, getLogger
+from os import getenv
 from warnings import filterwarnings
 
-from app.utils import generate_data
 from requests import get
 
-url_base = "http://127.0.0.1:80"
+url_base = getenv()
 headers = {"Content-Type": "application/json"}
 
 
@@ -39,7 +39,5 @@ if __name__ == "__main__":
             print("Server is Running")
         else:
             print("Server is not Running")
-    elif FLAGS.generate:
-        generate_data(FLAGS.size)
     else:
         raise ValueError(f"No valid arguments passed | {parser.print_help()}")

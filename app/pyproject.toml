@@ -19,7 +19,7 @@ pydantic = "^2.7.1"
 uvicorn = "^0.29.0"
 sqlalchemy = "^2"
 reportlab = "^4.2.0"
-psycopg = {extras = ["binary"], version = "^3.1.19"}
+psycopg = { extras = ["binary"], version = "^3.1.19" }
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
@@ -27,13 +27,16 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
 
+[tool.pytest.ini_options]
+requires = ["pytest-xdist", "pytest-cov", "pytest-mock"]
+addopts = ["--cov=app", "--cov-report=xml"]
+paths = ["tests"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
 exclude = [
     ".bzr",
     ".direnv",

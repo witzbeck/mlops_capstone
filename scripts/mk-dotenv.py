@@ -7,7 +7,9 @@ from os import environ
 from pathlib import Path
 
 
-def dump_dotenv(path: Path | None, pairs: Mapping | None, force: bool = False) -> Path:
+def dump_dotenv(
+    path: Path | None = None, pairs: Mapping | None = None, force: bool = False
+) -> Path:
     if path is None:
         path = Path.cwd() / ".env"
         info(f"Path not provided, using {path}")

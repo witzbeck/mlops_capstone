@@ -41,7 +41,7 @@ NUM_PDFS = 100
 
 # Setup MLflow
 set_tracking_uri(getenv("MLFLOW_TRACKING_URI"))
-set_experiment("PDF_Model_Training")
+set_experiment(getenv("MLFLOW_EXPERIMENT_NAME"))
 
 
 # Function to generate PDFs and their expected outputs

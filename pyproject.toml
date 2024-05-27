@@ -22,12 +22,6 @@ pytest-mock = "^3.14.0"
 pytest-cov = "^5.0.0"
 pytest-xdist = "^3.6.1"
 
-[tool.poetry.group.test.dependencies]
-pytest = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-pytest-xdist = "*"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

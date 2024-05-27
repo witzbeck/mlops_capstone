@@ -6,7 +6,7 @@ authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
 packages = [
     { include = "frontend", from = "." },
     { include = "pages", from = "." },
-    { include = "tests", from = "." }
+    { include = "tests", from = "." },
 ]
 
 [tool.poetry.dependencies]
@@ -28,14 +28,6 @@ pytest-xdist = "3.6.1"
 minversion = "8.2.1"
 addopts = ["--cov=frontend", "--cov-report=xml", "-n", "auto"]
 testpaths = ["tests"]
-
-[tool.pytest.ini_options]
-requires = ["pytest-xdist", "pytest-cov", "pytest-mock"]
-addopts = [
-    "--cov=frontend",
-    "--cov-report=xml"
-]
-paths = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]

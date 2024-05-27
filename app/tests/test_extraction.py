@@ -4,11 +4,10 @@ from unittest.mock import MagicMock, patch
 from app.__init__ import DOCSTORE_PATH
 from app.extract import (
     compare_results,
-    extract_pdf_data,
     extract_ocr_data,
+    extract_pdf_data,
     process_pdf,
 )
-
 
 TEST_PDF_PATH = DOCSTORE_PATH / "ACORD_CA_APP.pdf"
 

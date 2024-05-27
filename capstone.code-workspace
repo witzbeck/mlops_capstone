@@ -1,21 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "./tests",
-			"name": "root_tests",
-			"defaultInterpreterPath": "pipx run pytest"
-		},
-		{
-			"path": "./app_tests",
-			"name": "app_tests",
-			"defaultInterpreterPath": "./app/.venv/bin/python"
-		},
-		{
-			"path": "./frontend_tests",
-			"name": "frontend_tests",
-			"defaultInterpreterPath": "./frontend/.venv/bin/python"
-		},
-		{
 			"path": ".",
 			"name": "root",
 			"defaultInterpreterPath": "./.venv/bin/python"

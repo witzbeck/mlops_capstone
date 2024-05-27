@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: test
+      PYTHONDONTWRITEBYTECODE: 1
+      LOG_LEVEL: DEBUG
+
     strategy:
       fail-fast: true
       matrix:
@@ -44,6 +49,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.dir }}-poetry-
             ${{ runner.os }}-poetry-
+
+      - name: Create .env file from envs
+        run: |
+          echo "Running as user: $(whoami)"
+          echo "LOG_LEVEL=${LOG_LEVEL}" >> .env
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> .env
 
       - name: Install Test Dependencies
         if: steps.cache-poetry.outputs.cache-hit != 'true'

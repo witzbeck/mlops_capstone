@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_USER=mlflow
       - POSTGRES_PASSWORD=mlflow
-      - POSTGRES_DB=mlflow
+      - POSTGRES_DB=mlflow_db
     volumes:
       - ./mlflow_db/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./mlflow_db/init_scripts:/docker-entrypoint-initdb.d
@@ -15,7 +15,7 @@ services:
     ports:
       - "5435:5432"
     networks:
-      - mlflow_network
+      - bridge
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5435/ping"]
       interval: 30s
@@ -25,10 +25,10 @@ services:
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.12.2
     command: ["mlflow", "server",
-            "--backend-store-uri", "${MLFLOW_STORE_URI}",
-            "--default-artifact-root", "${MLFLOW_ARTIFACT_URI}",
-            "--host", "${MLFLOW_TRACKING_HOST}",
-            "--port", "${MLFLOW_TRACKING_PORT}"]
+            "--backend-store-uri", "/mlflow",
+            "--default-artifact-root", "/mlflow/artifacts",
+            "--host", "0.0.0.0",
+            "--port", "5000"]
     env_file:
       - .env
     container_name: mlflow_server
@@ -37,7 +37,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - mlflow_network
+      - bridge
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/ping"]
       interval: 30s
@@ -56,7 +56,7 @@ services:
     ports:
       - "5436:5432"
     networks:
-      - app_network
+      - bridge
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5436/ping"]
       interval: 30s
@@ -80,8 +80,7 @@ services:
       - mlflow
       - app_database
     networks:
-      - app_network
-      - mlflow_network
+      - bridge
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/ping"]
       interval: 30s
@@ -104,17 +103,13 @@ services:
       - app
       - mlflow
     networks:
-      - app_network
-      - mlflow_network
+      - bridge
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501"]
       interval: 30s
       timeout: 10s
       retries: 5
 
-
 networks:
-  mlflow_network:
-    driver: bridge
-  app_network:
+  bridge:
     driver: bridge

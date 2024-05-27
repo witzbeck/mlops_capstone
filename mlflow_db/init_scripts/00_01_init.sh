@@ -1,9 +1,10 @@
 #!/bin/bash
 # Connect to the default database 'postgres' and execute the commands
 psql -U postgres -d postgres -c "CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';"
-psql -U postgres -d postgres -c "CREATE USER $MLFLOW_TRACKING_USER WITH PASSWORD '$MLFLOW_TRACKING_PASSWORD';"
-psql -U postgres -d postgres -c "CREATE DATABASE $MLFLOW_TRACKING_NAME;"
-psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $MLFLOW_TRACKING_NAME TO $MLFLOW_TRACKING_USER;"
+psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"
+psql -U postgres -d postgres -c "CREATE DATABASE $POSTGRES_DB;"
+psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
 
 # Applying database migrations for MLflow
-mlflow db upgrade postgresql://$MLFLOW_TRACKING_USER:$MLFLOW_TRACKING_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$MLFLOW_TRACKING_NAME
+echo "Applying database migrations for MLflow"
+mlflow db upgrade postgresql+psycopg2://$MLFLOW_TRACKING_USER:$MLFLOW_TRACKING_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$MLFLOW_TRACKING_NAME

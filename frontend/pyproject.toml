@@ -3,7 +3,11 @@ name = "frontend"
 version = "0.2.0"
 description = "the frontend application of the project"
 authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
-packages = [{ include = "frontend", from = "." }]
+packages = [
+    { include = "frontend", from = "." },
+    { include = "pages", from = "." },
+    { include = "tests", from = "." }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"

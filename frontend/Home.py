@@ -10,8 +10,7 @@ from streamlit import (
     title,
 )
 
-from constants import ASSETS_PATH
-
+from frontend.constants import ASSETS_PATH
 
 title("Form Recognition & Document Extraction")
 header("Insurance Carrier")
@@ -26,14 +25,18 @@ with col1:
     forecasting_image = Image.open(ASSETS_PATH / "robot_arm.png")
     image(forecasting_image)
     caption(
-        "Computer vision form recognition and document extraction using pre-trained models."
+        "Computer vision form recognition \
+            and document extraction using pre-trained models."
     )
 
 with col2:
     subheader("Monitoring Dashboard")
     forecasting_image = Image.open(ASSETS_PATH / "stats.png")
     image(forecasting_image)
-    caption("Customer support chatbot based on pre-trained Phi-3 large language model")
+    caption(
+        "Monitoring dashboard for real-time \
+            performance metrics and model evaluation."
+    )
 
 divider()
 
@@ -43,7 +46,8 @@ caption("""
         Learn more on the Performance Index site.
         Performance results are based on testing as of dates
         shown in configurations and may not reflect all publicly available updates.
-        See backup for configuration details. No product or component can be absolutely secure.
+        See backup for configuration details.
+        No product or component can be absolutely secure.
         """)
 divider()
 

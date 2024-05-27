@@ -1,11 +1,6 @@
 {
 	"folders": [
 		{
-			"path": ".",
-			"name": "root",
-			"defaultInterpreterPath": "./.venv/bin/python"
-		},
-		{
 			"path": "./app",
 			"name": "app",
 			"defaultInterpreterPath": "./app/.venv/bin/python"
@@ -14,6 +9,11 @@
 			"path": "./frontend",
 			"name": "frontend",
 			"defaultInterpreterPath": "./frontend/.venv/bin/python"
+		},
+		{
+			"path": ".",
+			"name": "root",
+			"defaultInterpreterPath": "./.venv/bin/python"
 		}
 	],
 	"settings": {

@@ -45,7 +45,7 @@ services:
     container_name: database_server
     restart: always
     volumes:
-      - ./database/postgres-$ENVIRONMENT.conf:/etc/postgresql/postgresql.conf
+      - ./database/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./database/init_scripts:/docker-entrypoint-initdb.d
       - /etc/localtime:/etc/localtime:ro
     ports:

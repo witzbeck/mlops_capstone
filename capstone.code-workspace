@@ -85,5 +85,20 @@
 		"[yaml]": {
 			"editor.defaultFormatter": "redhat.vscode-yaml"
 		},
+		"[html]": {
+			"editor.defaultFormatter": "vscode.html-language-features"
+		},
+		"[css]": {
+			"editor.defaultFormatter": "vscode.css-language-features"
+		},
+		"[javascript]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"[shellscript]": {
+			"editor.defaultFormatter": "foxundermoon.shell-format"
+		},
+		"[ignore]": {
+			"editor.defaultFormatter": "foxundermoon.shell-format"
+		}
 	}
 }

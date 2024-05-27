@@ -3,9 +3,6 @@ name: Docker Deploy
 on:
   push:
     branches: ["main"]
-    tags: ["v*.*.*"]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   build:
@@ -39,6 +36,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Increment Version
+        id: increment_version
+        run: |
+          poetry version patch
+          echo "::set-output name=version::$(poetry version -s)"
+          git tag
+
       - name: Create .env file from envs
         run: |
           echo "Running as user: $(whoami)"
@@ -60,7 +64,3 @@ jobs:
       - name: Bring up Docker Compose services and verify
         run: |
           docker-compose up --build --remove-orphans -d
-
-      - name: Bring down Docker Compose services
-        if: github.event_name == 'pull_request'
-        run: docker-compose down || true # Ignore errors if services are not running

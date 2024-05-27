@@ -3,17 +3,21 @@ name = "frontend"
 version = "0.2.0"
 description = "the frontend application of the project"
 authors = ["Alex Beckwith <57322567+witzbeck@users.noreply.github.com>"]
-packages = [
-    { include = "frontend", from = "." },
-]
+packages = [{ include = "frontend", from = "." }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-pandas = "*"
-streamlit = "*"
-Pillow = "*"
-matplotlib = "*"
-requests = "*"
+python = "^3.11"
+pandas = "^2.2.2"
+streamlit = "^1.35.0"
+Pillow = "^10.3.0"
+matplotlib = "^3.9.0"
+requests = "^2.32.2"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-xdist = "*"
 
 [build-system]
 requires = ["poetry-core"]
@@ -64,11 +68,7 @@ ignore = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["alexlib", "app", "frontend"]
-known-local-folder = [
-    "app",
-    "frontend",
-    "mlops_capstone",
-]
+known-local-folder = ["app", "frontend", "mlops_capstone"]
 
 # Ignore `E402` (import violations) in all `__init__.py` files, and in select subdirectories.
 [tool.ruff.lint.per-file-ignores]

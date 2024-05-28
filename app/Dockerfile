@@ -10,3 +10,5 @@ COPY . /app
 WORKDIR /app
 
 RUN pip3 install --user --no-cache-dir .
+
+RUN apt-get update && apt-get install -y poppler-utils tessaract-ocr && apt-get clean

@@ -6,8 +6,10 @@ services:
     container_name: mlflow_db
     environment:
       - POSTGRES_USER=mlflow
-      - POSTGRES_PASSWORD=mlflow
+      - POSTGRES_PASSWORD=ml123
       - POSTGRES_DB=mlflow_db
+      - MLFLOW_TRACKING_HOST=0.0.0.0
+      - MLFLOW_TRACKING_PORT=5432
     volumes:
       - ./mlflow_db/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./mlflow_db/init_scripts:/docker-entrypoint-initdb.d
@@ -72,6 +74,7 @@ services:
       - ./app:/app
       - ./frontend:/frontend
       - ./store:/store
+      - ./.env:/.env
     env_file:
       - .env
     ports:
@@ -97,6 +100,7 @@ services:
     command: ["streamlit", "run", "Home.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     volumes:
       - ./frontend:/frontend
+      - ./.env:/.env
     ports:
       - "8501:8501"
     depends_on:

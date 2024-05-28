@@ -15,12 +15,12 @@ jobs:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       FASTAPI_PORT: ${{ github.FASTAPI_PORT }}
       APP_URL_BASE: ${{ github.APP_URL_BASE }}
-      WORKERS_PER_CORE: ${{ secrets.WORKERS_PER_CORE }}
-      MLFLOW_TRACKING_URI: ${{ github.MLFLOW_TRACKING_URI }}
-      MLFLOW_ARTIFACT_URI: ${{ github.MLFLOW_ARTIFACT_URI }}
-      MLFLOW_STORE_URI: ${{ github.MLFLOW_STORE_URI }}
-      MLFLOW_TRACKING_HOST: ${{ github.MLFLOW_TRACKING_HOST }}
-      MLFLOW_TRACKING_PORT: ${{ github.MLFLOW_TRACKING_PORT }}
+      WORKERS_PER_CORE: ${{ github.WORKERS_PER_CORE }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_ARTIFACT_URI: ${{ secrets.MLFLOW_ARTIFACT_URI }}
+      MLFLOW_STORE_URI: ${{ secrets.MLFLOW_STORE_URI }}
+      MLFLOW_TRACKING_HOST: ${{ secrets.MLFLOW_TRACKING_HOST }}
+      MLFLOW_TRACKING_PORT: ${{ secrets.MLFLOW_TRACKING_PORT }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -35,13 +35,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Increment Version
-        id: increment_version
-        run: |
-          poetry version patch
-          echo "::set-output name=version::$(poetry version -s)"
-          git tag
+        with:
+          fetch-depth: 0
 
       - name: Create .env file from envs
         run: |

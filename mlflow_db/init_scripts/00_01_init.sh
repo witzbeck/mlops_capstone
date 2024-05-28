@@ -1,10 +1,9 @@
 #!/bin/bash
 # Connect to the default database 'postgres' and execute the commands
-psql -U postgres -d postgres -c "CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';"
-psql -U postgres -d postgres -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"
-psql -U postgres -d postgres -c "CREATE DATABASE $POSTGRES_DB;"
-psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
+psql -U $POSTGRES_USER -d postgres -c "DROP DATABASE IF EXISTS $POSTGRES_DB;"
+psql -U $POSTGRES_USER -d postgres -c "CREATE DATABASE $POSTGRES_DB;"
+psql -U $POSTGRES_USER -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;"
 
 # Applying database migrations for MLflow
 echo "Applying database migrations for MLflow"
-mlflow db upgrade postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$MLFLOW_TRACKING_NAME
+mlflow db upgrade postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@$MLFLOW_TRACKING_HOST:$MLFLOW_TRACKING_PORT/$POSTGRES_DB
